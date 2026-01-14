@@ -1,10 +1,20 @@
+/**
+ * External dependencies.
+ */
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import "./styles/global.css";
-import App from "./App.tsx";
+
+/**
+ * Internal dependencies.
+ */
+import "@/styles/global.css";
+import { App } from "@/app.tsx";
+import { AppProvider } from "@/store/providers/AppProvider";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <App />
+    <AppProvider>
+      <App />
+    </AppProvider>
   </StrictMode>
 );
