@@ -29,10 +29,10 @@ import {
 } from "@/icons";
 
 export const CATEGORIES = [
-  { label: "Posts", value: "posts", logo: StickyNote },
-  { label: "Comments", value: "comments", logo: MessageSquare },
-  { label: "Messages", value: "messages", logo: MessageCircleMore },
-  { label: "AI Chats", value: "ai-chats", logo: BotMessageSquare },
+  { label: "Posts", value: "posts", icon: StickyNote },
+  { label: "Comments", value: "comments", icon: MessageSquare },
+  { label: "Messages", value: "messages", icon: MessageCircleMore },
+  { label: "AI Chats", value: "ai-chats", icon: BotMessageSquare },
 ];
 
 export const APPS = {
