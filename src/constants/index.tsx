@@ -36,7 +36,7 @@ export const CATEGORIES = [
   { label: "Posts", value: "posts", icon: StickyNote },
   { label: "Comments", value: "comments", icon: MessageSquare },
   { label: "Messages", value: "messages", icon: MessageCircleMore },
-  { label: "AI Chats", value: "ai-chats", icon: BotMessageSquare },
+  { label: "AI Chat", value: "ai-chats", icon: BotMessageSquare },
 ];
 
 export const APPS = {
