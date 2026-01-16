@@ -1,51 +1,50 @@
 /**
  * External dependencies.
  */
-import { Globe, MessageSquare, Users, Palette } from "lucide-react";
+import { Globe, MessageSquare, Users as UsersIcon, Palette } from "lucide-react";
 
 /**
  * Internal dependencies.
  */
-import { APPS } from "@/constants";
+import { Apps } from "./Apps";
+import { Chats } from "./Chats";
+import { Users } from "./Users";
+import { Appearance } from "./Appearance";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export const Comments = () => {
+export const Messages = () => {
   return (
     <div className="p-4 sm:p-6 border rounded-xl">
-      <Tabs defaultValue="app" className="space-y-2">
+      <Tabs defaultValue="apps" className="space-y-4">
         <TabsList className="flex flex-wrap gap-2 p-1">
-          <TabsTrigger value="app">
+          <TabsTrigger value="apps">
             <Globe />
-            App
+            Apps
           </TabsTrigger>
           <TabsTrigger value="users">
-            <Users />
+            <UsersIcon />
             Users
           </TabsTrigger>
-          <TabsTrigger value="comments">
+          <TabsTrigger value="chat">
             <MessageSquare />
-            Comments
+            Chat
           </TabsTrigger>
           <TabsTrigger value="appearance">
             <Palette />
             Appearance
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="app">
-          {APPS.COMMENTS.map((app) => (
-            <div key={app.value} className="mb-4">
-              <h2 className="text-2xl font-bold mb-2">{app.label}</h2>
-            </div>
-          ))}
+        <TabsContent value="apps">
+          <Apps />
         </TabsContent>
         <TabsContent value="users">
-          <h2 className="text-2xl font-bold">Users</h2>
+          <Users />
         </TabsContent>
-        <TabsContent value="comments">
-          <h2 className="text-2xl font-bold">Comments</h2>
+        <TabsContent value="chat">
+          <Chats />
         </TabsContent>
         <TabsContent value="appearance">
-          <h2 className="text-2xl font-bold">Appearance</h2>
+          <Appearance />
         </TabsContent>
       </Tabs>
     </div>

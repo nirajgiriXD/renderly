@@ -5,6 +5,8 @@ import { APPS } from "@/constants";
 import { getInitials } from "@/utils";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   Select,
   SelectContent,
@@ -12,8 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 export const Apps = () => {
   return (
@@ -37,7 +37,7 @@ export const Apps = () => {
         spacing={3}
         className="grid grid-cols-2 w-full"
       >
-        {APPS.POSTS.map((app) => (
+        {APPS["AI-CHATS"].map((app) => (
           <ToggleGroupItem
             asChild
             key={app.value}
@@ -61,6 +61,20 @@ export const Apps = () => {
           </ToggleGroupItem>
         ))}
       </ToggleGroup>
+      <div className="space-y-2">
+        <Label htmlFor="model" className="w-fit">
+          Model
+        </Label>
+        <Select defaultValue="gpt-4.2">
+          <SelectTrigger className="w-full" id="model">
+            <SelectValue placeholder="Model" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="gpt-4.2">GPT 4.2</SelectItem>
+            <SelectItem value="gpt-5.2">GPT 5.2</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
     </div>
   );
 };

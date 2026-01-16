@@ -12,7 +12,7 @@ import {
 
 export const ConfigSection = () => {
   return (
-    <div className="h-full p-4 sm:p-6">
+    <div className="h-full p-4 sm:p-6 overflow-y-auto">
       <Tabs defaultValue={CATEGORIES[0].value} className="space-y-2">
         <TabsList className="flex flex-wrap gap-2 p-1">
           {CATEGORIES.map((category) => (

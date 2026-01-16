@@ -4,7 +4,6 @@
 import { APPS } from "@/constants";
 import { getInitials } from "@/utils";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -12,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
@@ -37,7 +37,7 @@ export const Apps = () => {
         spacing={3}
         className="grid grid-cols-2 w-full"
       >
-        {APPS.POSTS.map((app) => (
+        {APPS.MESSAGES.map((app) => (
           <ToggleGroupItem
             asChild
             key={app.value}

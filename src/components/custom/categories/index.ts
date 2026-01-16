@@ -1,7 +1,7 @@
 /**
  * Export components from categories directory.
  */
-export { AiChats } from "./AiChats";
-export { Messages } from "./Messages";
-export { Comments } from "./Comments";
-export { Posts } from "./Posts";
+export { AiChats } from "./ai-chat";
+export { Messages } from "./messages";
+export { Comments } from "./comments";
+export { Posts } from "./posts";

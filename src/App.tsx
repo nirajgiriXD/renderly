@@ -20,8 +20,12 @@ export const App = () => {
   const { isMobile } = useWindowWidth();
 
   return (
-    <div className="w-full h-screen p-4 md:p-8 bg-gray-200">
-      <div className={`rounded-xl shadow-sm h-full w-full bg-white ${isMobile ? '' : 'overflow-hidden'}`}>
+    <div className="w-full h-screen p-4 md:p-8 bg-gray-200 space-y-4 text-sm">
+      <div
+        className={`rounded-xl shadow-sm h-full w-full bg-white ${
+          isMobile ? "" : "overflow-hidden"
+        }`}
+      >
         {isMobile ? (
           <div className="flex flex-col h-full w-full">
             {/* Config Section */}
