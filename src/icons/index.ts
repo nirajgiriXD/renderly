@@ -3,11 +3,15 @@
  * @see https://www.svgrepo.com/
  */
 
+export { default as Anthropic } from "./anthropic.svg";
 export { default as Discord } from "./discord.svg";
 export { default as Facebook } from "./facebook.svg";
+export { default as Gemini } from "./gemini.svg";
+export { default as Grok } from "./grok.svg";
 export { default as LinkedIn } from "./linkedin.svg";
 export { default as Instagram } from "./instagram.svg";
 export { default as Messenger } from "./messenger.svg";
+export { default as OpenAI } from "./openai.svg";
 export { default as Reddit } from "./reddit.svg";
 export { default as Signal } from "./signal.svg";
 export { default as Slack } from "./slack.svg";

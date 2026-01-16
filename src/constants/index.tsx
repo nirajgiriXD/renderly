@@ -26,6 +26,10 @@ import {
   Teams,
   Signal,
   Discord,
+  OpenAI,
+  Anthropic,
+  Gemini,
+  Grok,
 } from "@/icons";
 
 export const CATEGORIES = [
@@ -66,9 +70,9 @@ export const APPS = {
     { label: "Snapchat", value: "snapchat", logo: Snapchat },
   ],
   "AI-CHATS": [
-    { label: "ChatGPT", value: "chatgpt", logo: "" },
-    { label: "Gemini", value: "gemini", logo: "" },
-    { label: "Claude", value: "claude", logo: "" },
-    { label: "Grok", value: "grok", logo: "" },
+    { label: "ChatGPT", value: "chatgpt", logo: OpenAI },
+    { label: "Gemini", value: "gemini", logo: Gemini },
+    { label: "Claude", value: "claude", logo: Anthropic },
+    { label: "Grok", value: "grok", logo: Grok },
   ],
 };
