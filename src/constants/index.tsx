@@ -49,6 +49,7 @@ export const APPS = {
     { label: "Instagram", value: "instagram", logo: Instagram },
     { label: "TikTok", value: "tiktok", logo: Tiktok },
     { label: "YouTube", value: "youtube", logo: YouTube },
+    { label: "Reddit", value: "reddit", logo: Reddit },
     { label: "Twitter", value: "twitter", logo: Twitter },
   ],
   MESSAGES: [
