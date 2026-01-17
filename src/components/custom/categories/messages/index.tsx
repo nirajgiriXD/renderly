@@ -19,17 +19,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const Messages = ({
   configurationTab,
-  setConfigurationTab,
+  handleConfigurationTabChange,
 }: {
   configurationTab: string;
-  setConfigurationTab: React.Dispatch<React.SetStateAction<string>>;
+  handleConfigurationTabChange: (value: string) => void;
 }) => {
   return (
     <div className="p-4 sm:p-6 border rounded-xl">
       <Tabs
         className="space-y-4"
         defaultValue={configurationTab}
-        onValueChange={setConfigurationTab}
+        onValueChange={handleConfigurationTabChange}
       >
         <TabsList className="flex flex-wrap gap-2 p-1">
           <TabsTrigger value="apps">

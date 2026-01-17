@@ -35,6 +35,29 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     return option || "apps";
   });
 
+  /**
+   * Handle category tab change.
+   * @param tab - The new category tab.
+   */
+  const handleCategoryTabChange = (tab: keyof typeof TABS) => {
+    setCategoryTab(
+      tab in TABS ? tab : (Object.keys(TABS)[0] as keyof typeof TABS)
+    );
+    setConfigurationTab((prev) =>
+      TABS[tab].includes(prev) ? prev : TABS[tab][0]
+    );
+  };
+
+  /**
+   * Handle configuration tab change.
+   * @param tab - The new configuration tab.
+   */
+  const handleConfigurationTabChange = (tab: string) => {
+    setConfigurationTab(
+      TABS[categoryTab].includes(tab) ? tab : TABS[categoryTab][0]
+    );
+  };
+
   // Sync URL search params when tabs change.
   useEffect(() => {
     setSearchParams({
@@ -48,9 +71,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     postContent,
     setPostContent,
     categoryTab,
-    setCategoryTab,
+    handleCategoryTabChange,
     configurationTab,
-    setConfigurationTab,
+    handleConfigurationTabChange,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

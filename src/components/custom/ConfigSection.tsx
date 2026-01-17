@@ -12,15 +12,21 @@ import {
 import { useStore } from "@/hooks";
 
 export const ConfigSection = () => {
-  const { categoryTab, setCategoryTab, configurationTab, setConfigurationTab } =
-    useStore();
+  const {
+    categoryTab,
+    handleCategoryTabChange,
+    configurationTab,
+    handleConfigurationTabChange,
+  } = useStore();
 
   return (
     <div className="h-full p-4 sm:p-6 overflow-y-auto">
       <Tabs
         defaultValue={categoryTab}
         className="space-y-2"
-        onValueChange={(value) => setCategoryTab(value as keyof typeof TABS)}
+        onValueChange={(value) =>
+          handleCategoryTabChange(value as keyof typeof TABS)
+        }
       >
         <TabsList className="flex flex-wrap gap-2 p-1">
           {CATEGORIES.map((category) => (
@@ -42,7 +48,7 @@ export const ConfigSection = () => {
         >
           <Posts
             configurationTab={configurationTab}
-            setConfigurationTab={setConfigurationTab}
+            handleConfigurationTabChange={handleConfigurationTabChange}
           />
         </TabsContent>
         <TabsContent
@@ -53,7 +59,7 @@ export const ConfigSection = () => {
         >
           <Comments
             configurationTab={configurationTab}
-            setConfigurationTab={setConfigurationTab}
+            handleConfigurationTabChange={handleConfigurationTabChange}
           />
         </TabsContent>
         <TabsContent
@@ -64,7 +70,7 @@ export const ConfigSection = () => {
         >
           <Messages
             configurationTab={configurationTab}
-            setConfigurationTab={setConfigurationTab}
+            handleConfigurationTabChange={handleConfigurationTabChange}
           />
         </TabsContent>
         <TabsContent
@@ -75,7 +81,7 @@ export const ConfigSection = () => {
         >
           <AiChats
             configurationTab={configurationTab}
-            setConfigurationTab={setConfigurationTab}
+            handleConfigurationTabChange={handleConfigurationTabChange}
           />
         </TabsContent>
       </Tabs>

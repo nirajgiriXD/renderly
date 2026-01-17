@@ -15,16 +15,16 @@ type AppContextType = {
   postContent: string;
   setPostContent: React.Dispatch<React.SetStateAction<string>>;
   categoryTab: keyof typeof TABS;
-  setCategoryTab: React.Dispatch<React.SetStateAction<keyof typeof TABS>>;
+  handleCategoryTabChange: (tab: keyof typeof TABS) => void;
   configurationTab: string;
-  setConfigurationTab: React.Dispatch<React.SetStateAction<string>>;
+  handleConfigurationTabChange: (tab: string) => void;
 };
 
 export const AppContext = createContext<AppContextType>({
   postContent: "",
   setPostContent: () => {},
   categoryTab: "posts",
-  setCategoryTab: () => {},
+  handleCategoryTabChange: () => {},
   configurationTab: "apps",
-  setConfigurationTab: () => {},
+  handleConfigurationTabChange: () => {},
 });
