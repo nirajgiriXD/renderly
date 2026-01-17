@@ -35,7 +35,7 @@ import { getInitials } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
-export const Chats = () => {
+export const Conversation = () => {
   const [chats, setChats] = useState([
     {
       id: "1",
@@ -151,7 +151,11 @@ export const Chats = () => {
                         accept="image/*, video/*"
                         placeholder="Select media file"
                       />
-                      <Button variant="outline" size="sm" className="cursor-pointer">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="cursor-pointer"
+                      >
                         <CalendarDays />
                         Sent Date
                       </Button>

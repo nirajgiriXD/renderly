@@ -81,8 +81,8 @@ export const APPS = {
 
 const POST_TABS = ["apps", "author", "content", "metrics", "appearance"];
 const COMMENT_TABS = ["apps", "users", "comments", "appearance"];
-const MESSAGE_TABS = ["apps", "users", "conversations", "appearance"];
-const AI_CHAT_TABS = ["apps", "conversations", "appearance"];
+const MESSAGE_TABS = ["apps", "users", "conversation", "appearance"];
+const AI_CHAT_TABS = ["apps", "conversation", "appearance"];
 
 export const TABS = {
   posts: POST_TABS,

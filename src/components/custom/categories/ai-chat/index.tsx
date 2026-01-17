@@ -7,8 +7,8 @@ import { Bot, MessageSquare, Palette } from "lucide-react";
  * Internal dependencies.
  */
 import { Apps } from "./Apps";
-import { Chats } from "./Chats";
 import { Appearance } from "./Appearance";
+import { Conversation } from "./Conversation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const AiChats = ({
@@ -30,9 +30,9 @@ export const AiChats = ({
             <Bot />
             Apps
           </TabsTrigger>
-          <TabsTrigger value="chat">
+          <TabsTrigger value="conversation">
             <MessageSquare />
-            Chat
+            Conversation
           </TabsTrigger>
           <TabsTrigger value="appearance">
             <Palette />
@@ -42,8 +42,8 @@ export const AiChats = ({
         <TabsContent value="apps">
           <Apps />
         </TabsContent>
-        <TabsContent value="chat">
-          <Chats />
+        <TabsContent value="conversation">
+          <Conversation />
         </TabsContent>
         <TabsContent value="appearance">
           <Appearance />

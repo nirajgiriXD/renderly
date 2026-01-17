@@ -20,7 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { getInitials } from "@/utils";
 
-export const Chats = () => {
+export const Conversation = () => {
   const [chats, setChats] = useState([
     {
       id: "1",
@@ -42,8 +42,8 @@ export const Chats = () => {
     <div className="space-y-4 sm:space-y-6">
       <div className="space-y-2">
         <div className="flex items-center justify-between gap-2">
-          <Label htmlFor="message" className="w-fit">
-            Messages
+          <Label htmlFor="conversation" className="w-fit">
+            Conversation
           </Label>
           <Button size="sm" className="cursor-pointer">
             <Plus />
