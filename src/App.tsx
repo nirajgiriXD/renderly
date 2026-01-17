@@ -34,7 +34,7 @@ export const App = () => {
       >
         <Tabs
           defaultValue={categoryTab}
-          className="gap-0"
+          className="gap-0 h-full pb-4 sm:pb-6"
           onValueChange={(value) =>
             handleCategoryTabChange(value as keyof typeof TABS)
           }
