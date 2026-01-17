@@ -7,6 +7,7 @@ export { default as Anthropic } from "./anthropic.svg";
 export { default as Discord } from "./discord.svg";
 export { default as Facebook } from "./facebook.svg";
 export { default as Gemini } from "./gemini.svg";
+export { default as GitHub } from "./github.svg";
 export { default as Grok } from "./grok.svg";
 export { default as LinkedIn } from "./linkedin.svg";
 export { default as Instagram } from "./instagram.svg";

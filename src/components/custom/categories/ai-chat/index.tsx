@@ -19,26 +19,28 @@ export const AiChats = ({
   handleConfigurationTabChange: (value: string) => void;
 }) => {
   return (
-    <div className="p-4 sm:p-6 border rounded-xl">
+    <div className="p-4 sm:p-6 border rounded-xl h-full">
       <Tabs
         className="space-y-4"
         defaultValue={configurationTab}
         onValueChange={handleConfigurationTabChange}
       >
-        <TabsList className="flex flex-wrap gap-2 p-1">
-          <TabsTrigger value="apps">
-            <Bot />
-            Apps
-          </TabsTrigger>
-          <TabsTrigger value="conversation">
-            <MessageSquare />
-            Conversation
-          </TabsTrigger>
-          <TabsTrigger value="appearance">
-            <Palette />
-            Appearance
-          </TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto">
+          <TabsList className="flex items-center gap-2 p-1">
+            <TabsTrigger value="apps">
+              <Bot />
+              Apps
+            </TabsTrigger>
+            <TabsTrigger value="conversation">
+              <MessageSquare />
+              Conversation
+            </TabsTrigger>
+            <TabsTrigger value="appearance">
+              <Palette />
+              Appearance
+            </TabsTrigger>
+          </TabsList>
+        </div>
         <TabsContent value="apps">
           <Apps />
         </TabsContent>

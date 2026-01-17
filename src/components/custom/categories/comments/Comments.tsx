@@ -47,7 +47,7 @@ export const Comments = () => {
   ]);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 overflow-y-auto">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Label className="text-base font-semibold">Comments</Label>

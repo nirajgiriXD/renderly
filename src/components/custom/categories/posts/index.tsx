@@ -28,28 +28,30 @@ export const Posts = ({
         onValueChange={handleConfigurationTabChange}
       >
         {/* Tabs Trigger */}
-        <TabsList className="flex flex-wrap gap-2 p-1">
-          <TabsTrigger value="apps">
-            <Globe />
-            Apps
-          </TabsTrigger>
-          <TabsTrigger value="author">
-            <User />
-            Author
-          </TabsTrigger>
-          <TabsTrigger value="content">
-            <TextSelect />
-            Content
-          </TabsTrigger>
-          <TabsTrigger value="metrics">
-            <Gauge />
-            Metrics
-          </TabsTrigger>
-          <TabsTrigger value="appearance">
-            <Palette />
-            Appearance
-          </TabsTrigger>
-        </TabsList>
+        <div className="overflow-x-auto">
+          <TabsList className="flex items-center gap-2 p-1">
+            <TabsTrigger value="apps">
+              <Globe />
+              Apps
+            </TabsTrigger>
+            <TabsTrigger value="author">
+              <User />
+              Author
+            </TabsTrigger>
+            <TabsTrigger value="content">
+              <TextSelect />
+              Content
+            </TabsTrigger>
+            <TabsTrigger value="metrics">
+              <Gauge />
+              Metrics
+            </TabsTrigger>
+            <TabsTrigger value="appearance">
+              <Palette />
+              Appearance
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* Tabs Content */}
         <TabsContent value="apps">
