@@ -37,7 +37,7 @@ export const Apps = () => {
         spacing={3}
         className="grid grid-cols-2 w-full"
       >
-        {APPS.MESSAGES.map((app) => (
+        {APPS.messages.map((app) => (
           <ToggleGroupItem
             asChild
             key={app.value}

@@ -32,6 +32,8 @@ import {
   Grok,
 } from "@/icons";
 
+export const APP_BASENAME = "/post-preview";
+
 export const CATEGORIES = [
   { label: "Posts", value: "posts", icon: StickyNote },
   { label: "Comments", value: "comments", icon: MessageSquare },
@@ -40,7 +42,7 @@ export const CATEGORIES = [
 ];
 
 export const APPS = {
-  POSTS: [
+  posts: [
     { label: "Facebook", value: "facebook", logo: Facebook },
     { label: "Instagram", value: "instagram", logo: Instagram },
     { label: "TikTok", value: "tiktok", logo: Tiktok },
@@ -48,7 +50,7 @@ export const APPS = {
     { label: "Reddit", value: "reddit", logo: Reddit },
     { label: "Twitter", value: "twitter", logo: Twitter },
   ],
-  COMMENTS: [
+  comments: [
     { label: "Facebook", value: "facebook", logo: Facebook },
     { label: "Instagram", value: "instagram", logo: Instagram },
     { label: "TikTok", value: "tiktok", logo: Tiktok },
@@ -56,7 +58,7 @@ export const APPS = {
     { label: "Reddit", value: "reddit", logo: Reddit },
     { label: "Twitter", value: "twitter", logo: Twitter },
   ],
-  MESSAGES: [
+  messages: [
     { label: "Discord", value: "discord", logo: Discord },
     { label: "Messenger", value: "messenger", logo: Messenger },
     { label: "Instagram", value: "instagram", logo: Instagram },
@@ -69,10 +71,22 @@ export const APPS = {
     { label: "WhatsApp", value: "whatsapp", logo: WhatsApp },
     { label: "Snapchat", value: "snapchat", logo: Snapchat },
   ],
-  "AI-CHATS": [
+  "ai-chats": [
     { label: "ChatGPT", value: "chatgpt", logo: OpenAI },
     { label: "Gemini", value: "gemini", logo: Gemini },
     { label: "Claude", value: "claude", logo: Anthropic },
     { label: "Grok", value: "grok", logo: Grok },
   ],
+};
+
+const POST_TABS = ["apps", "author", "content", "metrics", "appearance"];
+const COMMENT_TABS = ["apps", "users", "comments", "appearance"];
+const MESSAGE_TABS = ["apps", "users", "conversations", "appearance"];
+const AI_CHAT_TABS = ["apps", "conversations", "appearance"];
+
+export const TABS = {
+  posts: POST_TABS,
+  comments: COMMENT_TABS,
+  messages: MESSAGE_TABS,
+  "ai-chats": AI_CHAT_TABS,
 };

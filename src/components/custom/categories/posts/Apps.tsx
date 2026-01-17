@@ -37,7 +37,7 @@ export const Apps = () => {
         spacing={3}
         className="grid grid-cols-2 w-full"
       >
-        {APPS.POSTS.map((app) => (
+        {APPS.posts.map((app) => (
           <ToggleGroupItem
             asChild
             key={app.value}

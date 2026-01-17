@@ -1,7 +1,7 @@
 /**
  * Internal dependencies.
  */
-import { CATEGORIES } from "@/constants";
+import { CATEGORIES, TABS } from "@/constants";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Posts,
@@ -9,11 +9,19 @@ import {
   Comments,
   Messages,
 } from "@/components/custom/categories";
+import { useStore } from "@/hooks";
 
 export const ConfigSection = () => {
+  const { categoryTab, setCategoryTab, configurationTab, setConfigurationTab } =
+    useStore();
+
   return (
     <div className="h-full p-4 sm:p-6 overflow-y-auto">
-      <Tabs defaultValue={CATEGORIES[0].value} className="space-y-2">
+      <Tabs
+        defaultValue={categoryTab}
+        className="space-y-2"
+        onValueChange={(value) => setCategoryTab(value as keyof typeof TABS)}
+      >
         <TabsList className="flex flex-wrap gap-2 p-1">
           {CATEGORIES.map((category) => (
             <TabsTrigger
@@ -32,7 +40,10 @@ export const ConfigSection = () => {
             "posts"
           }
         >
-          <Posts />
+          <Posts
+            configurationTab={configurationTab}
+            setConfigurationTab={setConfigurationTab}
+          />
         </TabsContent>
         <TabsContent
           value={
@@ -40,15 +51,21 @@ export const ConfigSection = () => {
               ?.value || "comments"
           }
         >
-          <Comments />
+          <Comments
+            configurationTab={configurationTab}
+            setConfigurationTab={setConfigurationTab}
+          />
         </TabsContent>
         <TabsContent
           value={
-            CATEGORIES.find((category) => category.value === "messages")?.value ||
-            "messages"
+            CATEGORIES.find((category) => category.value === "messages")
+              ?.value || "messages"
           }
         >
-          <Messages />
+          <Messages
+            configurationTab={configurationTab}
+            setConfigurationTab={setConfigurationTab}
+          />
         </TabsContent>
         <TabsContent
           value={
@@ -56,7 +73,10 @@ export const ConfigSection = () => {
               ?.value || "ai-chats"
           }
         >
-          <AiChats />
+          <AiChats
+            configurationTab={configurationTab}
+            setConfigurationTab={setConfigurationTab}
+          />
         </TabsContent>
       </Tabs>
     </div>

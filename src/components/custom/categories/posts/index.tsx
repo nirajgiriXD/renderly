@@ -13,10 +13,20 @@ import { Metrics } from "./Metrics";
 import { Appearance } from "./Appearance";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export const Posts = () => {
+export const Posts = ({
+  configurationTab,
+  setConfigurationTab,
+}: {
+  configurationTab: string;
+  setConfigurationTab: React.Dispatch<React.SetStateAction<string>>;
+}) => {
   return (
     <div className="p-4 sm:p-6 border rounded-xl">
-      <Tabs defaultValue="apps" className="space-y-4">
+      <Tabs
+        className="space-y-4"
+        defaultValue={configurationTab}
+        onValueChange={setConfigurationTab}
+      >
         {/* Tabs Trigger */}
         <TabsList className="flex flex-wrap gap-2 p-1">
           <TabsTrigger value="apps">
