@@ -90,3 +90,143 @@ export const TABS = {
   messages: MESSAGE_TABS,
   "ai-chats": AI_CHAT_TABS,
 };
+
+export const POSTS_CONFIG = {
+  apps: {
+    enableMultipleSelection: "disable",
+    selectedApps: APPS.posts.reduce(
+      (acc, app) => {
+        {
+          acc[app.value] = false;
+          return acc;
+        }
+      },
+      {} as Record<string, boolean>
+    ),
+  },
+  author: {
+    name: "",
+    username: "",
+    jobTitle: "",
+    verificationStatus: "unverified" as "verified" | "unverified",
+    profilePicture: null,
+  },
+  content: {
+    caption: "",
+    media: null,
+  },
+  metrics: {
+    reactions: 0,
+    comments: 0,
+    reposts: 0,
+    views: 0,
+    date: "",
+  },
+  appearance: {
+    theme: "light",
+    device: "android",
+  },
+};
+
+export const COMMENTS_CONFIG = {
+  apps: {
+    enableMultipleSelection: "disable",
+    selectedApps: APPS.comments.reduce(
+      (acc, app) => {
+        {
+          acc[app.value] = false;
+          return acc;
+        }
+      },
+      {} as Record<string, boolean>
+    ),
+  },
+  users: {
+    creator: { id: 0, name: "", username: "", profilePicture: null },
+    commentors: [] as Array<{
+      id: number;
+      name: string;
+      username: string;
+      profilePicture: string | null;
+    }>,
+  },
+  comments: {
+    data: [] as Array<{
+      id: number;
+      text: string;
+      userId: number;
+      replies: Array<{ id: number; text: string; userId: number }>;
+    }>,
+  },
+  appearance: {
+    theme: "light",
+    device: "android",
+  },
+};
+
+export const MESSAGES_CONFIG = {
+  apps: {
+    enableMultipleSelection: "disable",
+    selectedApps: APPS.messages.reduce(
+      (acc, app) => {
+        {
+          acc[app.value] = false;
+          return acc;
+        }
+      },
+      {} as Record<string, boolean>
+    ),
+  },
+  users: {
+    sender: { name: "", username: "", profilePicture: null },
+    receiver: { name: "", username: "", profilePicture: null },
+  },
+  conversation: {
+    type: "single" as "single" | "group",
+    messages: [] as Array<{
+      id: number;
+      text: string;
+      sender: "self" | "other";
+      media: string | null;
+      date: string | null;
+    }>,
+  },
+  appearance: {
+    theme: "light",
+    device: "android",
+  },
+};
+
+export const AI_CHATS_CONFIG = {
+  apps: {
+    enableMultipleSelection: "disable",
+    selectedApps: APPS["ai-chats"].reduce(
+      (acc, app) => {
+        {
+          acc[app.value] = false;
+          return acc;
+        }
+      },
+      {} as Record<string, boolean>
+    ),
+    model: "gpt-4",
+  },
+  conversation: {
+    data: [] as Array<{
+      id: number;
+      text: string;
+      sender: "user" | "bot";
+    }>,
+  },
+  appearance: {
+    theme: "light",
+    device: "android",
+  },
+};
+
+export const DEFAULT_CONFIG = {
+  posts: POSTS_CONFIG,
+  comments: COMMENTS_CONFIG,
+  messages: MESSAGES_CONFIG,
+  "ai-chats": AI_CHATS_CONFIG,
+};
