@@ -1,10 +1,23 @@
+/**
+ * Internal dependencies.
+ */
+import { useStore } from "@/hooks";
+
 export const PreviewSection = () => {
+  const { form, categoryTab, configurationTab } = useStore();
+
   return (
     <div className="h-full w-full px-4 sm:px-6">
       <div className="flex items-center justify-center h-full w-full border rounded-lg">
-        <h1 className="text-xl font-bold">
-          Welcome to the Preview Section
-        </h1>
+        <pre>
+          {JSON.stringify(
+            form[categoryTab][
+              configurationTab as keyof (typeof form)[typeof categoryTab]
+            ],
+            null,
+            2
+          )}
+        </pre>
       </div>
     </div>
   );

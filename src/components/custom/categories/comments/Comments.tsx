@@ -2,7 +2,6 @@
  * External dependencies.
  */
 import { GripVertical, Plus, Reply, Trash2 } from "lucide-react";
-import { useState } from "react";
 
 /**
  * Internal dependencies.
@@ -27,45 +26,47 @@ import {
   SortableItemHandle,
 } from "@/components/ui/sortable";
 import { getInitials } from "@/utils";
+import { useStore } from "@/hooks";
 
 export const Comments = () => {
-  const [comments, setComments] = useState([
-    {
-      id: "1",
-      avatar: "",
-      comment: "John Doe",
-      reactions: 4,
-      username: "johndoe",
-    },
-    {
-      id: "2",
-      avatar: "",
-      comment: "Jane Smith",
-      reactions: 2,
-      username: "janesmith",
-    },
-  ]);
+  const { form, handleFormChange } = useStore();
 
   return (
     <div className="space-y-4 overflow-y-auto">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <Label className="text-base font-semibold">Comments</Label>
-          <Badge variant="secondary">12</Badge>
+          <Badge variant="secondary">
+            {form.comments.comments.data.length}
+          </Badge>
         </div>
-        <Button size="sm" className="cursor-pointer">
+        <Button
+          size="sm"
+          className="cursor-pointer"
+          onClick={() =>
+            handleFormChange("data", [
+              ...form.comments.comments.data,
+              {
+                id: Date.now(),
+                text: "",
+                userId: form.comments.users.creator.id,
+                replies: [],
+              },
+            ])
+          }
+        >
           <Plus />
           Add New
         </Button>
       </div>
       <Sortable
-        value={comments}
-        onValueChange={setComments}
         orientation="vertical"
         getItemValue={(item) => item.id}
+        value={form.comments.comments.data}
+        onValueChange={(comments) => handleFormChange("data", comments)}
       >
         <SortableContent className="space-y-4 md:space-y-6">
-          {comments.map((comment) => (
+          {form.comments.comments.data.map((comment) => (
             <SortableItem key={comment.id} value={comment.id} asChild>
               <div className="space-y-4 border p-3 rounded-md relative">
                 <div className="space-y-2">
@@ -80,101 +81,251 @@ export const Comments = () => {
                           <GripVertical className="h-5 w-5 cursor-grab active:cursor-grabbing" />
                         </button>
                       </SortableItemHandle>
-                      <Select defaultValue="johndoe">
-                        <SelectTrigger id="users">
+                      <Select
+                        value={String(comment.userId)}
+                        onValueChange={(value) => {
+                          const updatedComments =
+                            form.comments.comments.data.map((item) =>
+                              item.id === comment.id
+                                ? { ...item, userId: Number(value) }
+                                : item
+                            );
+                          handleFormChange("data", updatedComments);
+                        }}
+                      >
+                        <SelectTrigger>
                           <SelectValue placeholder="Select user" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="johndoe">
+                          <SelectItem
+                            value={form.comments.users.creator.id.toString()}
+                          >
                             <Avatar className="size-5 rounded-none">
-                              <AvatarImage src="" />
+                              <AvatarImage
+                                src={
+                                  form.comments.users.creator.profilePicture
+                                    ? URL.createObjectURL(
+                                        form.comments.users.creator
+                                          .profilePicture as unknown as File
+                                      )
+                                    : ""
+                                }
+                              />
                               <AvatarFallback>
-                                {getInitials("John Doe")}
+                                {getInitials(form.comments.users.creator.name)}
                               </AvatarFallback>
                             </Avatar>
-                            John Doe
+                            {form.comments.users.creator.name}
                           </SelectItem>
-                          <SelectItem value="janesmith">
-                            <Avatar className="size-5 rounded-none">
-                              <AvatarImage src="" />
-                              <AvatarFallback>
-                                {getInitials("Jane Smith")}
-                              </AvatarFallback>
-                            </Avatar>
-                            Jane Smith
-                          </SelectItem>
+                          {form.comments.users.commentors.map((user) => (
+                            <SelectItem
+                              key={user.id}
+                              value={user.id.toString()}
+                            >
+                              <Avatar className="size-5 rounded-none">
+                                <AvatarImage
+                                  src={
+                                    user.profilePicture
+                                      ? URL.createObjectURL(
+                                          user.profilePicture as unknown as File
+                                        )
+                                      : ""
+                                  }
+                                />
+                                <AvatarFallback>
+                                  {getInitials(user.name)}
+                                </AvatarFallback>
+                              </Avatar>
+                              {user.name}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="flex items-center gap-2">
                       <Button
-                        variant="outline"
                         size="sm"
+                        variant="outline"
                         className="cursor-pointer"
+                        onClick={() =>
+                          handleFormChange(
+                            "data",
+                            form.comments.comments.data.map((item) =>
+                              item.id === comment.id
+                                ? {
+                                    ...item,
+                                    replies: [
+                                      ...(item.replies || []),
+                                      {
+                                        text: "",
+                                        id: Date.now(),
+                                        userId: form.comments.users.creator.id,
+                                      },
+                                    ],
+                                  }
+                                : item
+                            )
+                          )
+                        }
                       >
                         <Reply />
                       </Button>
                       <Button
-                        variant="outline"
                         size="sm"
+                        variant="outline"
                         className="cursor-pointer"
+                        onClick={() =>
+                          handleFormChange(
+                            "data",
+                            form.comments.comments.data.filter(
+                              (item) => item.id !== comment.id
+                            )
+                          )
+                        }
                       >
                         <Trash2 className="text-red-600" />
                       </Button>
                     </div>
                   </div>
                   <Textarea
-                    id="comment"
                     placeholder="Comment"
-                    value={comment.comment}
+                    value={comment.text}
+                    onChange={(e) =>
+                      handleFormChange(
+                        "data",
+                        form.comments.comments.data.map((item) =>
+                          item.id === comment.id
+                            ? { ...item, text: e.target.value }
+                            : item
+                        )
+                      )
+                    }
                   />
                 </div>
-                <div className="space-y-2 border-gray-400">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="border-l-2 pl-2 text-muted-foreground">
-                      Add a reply to @johndoe
-                    </p>
+                {comment.replies.map((reply) => (
+                  <div className="space-y-2 border-gray-400">
                     <div className="flex items-center justify-between gap-2">
-                      <Select defaultValue="johndoe">
-                        <SelectTrigger id="users">
-                          <SelectValue placeholder="Select user" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="johndoe">
-                            <Avatar className="size-5 rounded-none">
-                              <AvatarImage src="" />
-                              <AvatarFallback>
-                                {getInitials("John Doe")}
-                              </AvatarFallback>
-                            </Avatar>
-                            John Doe
-                          </SelectItem>
-                          <SelectItem value="janesmith">
-                            <Avatar className="size-5 rounded-none">
-                              <AvatarImage src="" />
-                              <AvatarFallback>
-                                {getInitials("Jane Smith")}
-                              </AvatarFallback>
-                            </Avatar>
-                            Jane Smith
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="cursor-pointer"
-                      >
-                        <Trash2 className="text-red-600" />
-                      </Button>
+                      <p className="border-l-2 pl-2 text-muted-foreground">
+                        Reply in the comment
+                      </p>
+                      <div className="flex items-center justify-between gap-2">
+                        <Select
+                          value={String(reply.userId)}
+                          onValueChange={(value) =>
+                            handleFormChange(
+                              "data",
+                              form.comments.comments.data.map((item) =>
+                                item.id === comment.id
+                                  ? {
+                                      ...item,
+                                      replies: item.replies.map((r) =>
+                                        r.id === reply.id
+                                          ? { ...r, userId: Number(value) }
+                                          : r
+                                      ),
+                                    }
+                                  : item
+                              )
+                            )
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select user" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem
+                              value={form.comments.users.creator.id.toString()}
+                            >
+                              <Avatar className="size-5 rounded-none">
+                                <AvatarImage
+                                  src={
+                                    form.comments.users.creator.profilePicture
+                                      ? URL.createObjectURL(
+                                          form.comments.users.creator
+                                            .profilePicture as unknown as File
+                                        )
+                                      : ""
+                                  }
+                                />
+                                <AvatarFallback>
+                                  {getInitials(
+                                    form.comments.users.creator.name
+                                  )}
+                                </AvatarFallback>
+                              </Avatar>
+                              {form.comments.users.creator.name}
+                            </SelectItem>
+                            {form.comments.users.commentors.map((user) => (
+                              <SelectItem
+                                key={user.id}
+                                value={user.id.toString()}
+                              >
+                                <Avatar className="size-5 rounded-none">
+                                  <AvatarImage
+                                    src={
+                                      user.profilePicture
+                                        ? URL.createObjectURL(
+                                            user.profilePicture as unknown as File
+                                          )
+                                        : ""
+                                    }
+                                  />
+                                  <AvatarFallback>
+                                    {getInitials(user.name)}
+                                  </AvatarFallback>
+                                </Avatar>
+                                {user.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="cursor-pointer"
+                          onClick={() =>
+                            handleFormChange(
+                              "data",
+                              form.comments.comments.data.map((item) =>
+                                item.id === comment.id
+                                  ? {
+                                      ...item,
+                                      replies: item.replies.filter(
+                                        (r) => r.id !== reply.id
+                                      ),
+                                    }
+                                  : item
+                              )
+                            )
+                          }
+                        >
+                          <Trash2 className="text-red-600" />
+                        </Button>
+                      </div>
                     </div>
+                    <Textarea
+                      placeholder="Reply Comment"
+                      value={reply.text}
+                      onChange={(e) =>
+                        handleFormChange(
+                          "data",
+                          form.comments.comments.data.map((item) =>
+                            item.id === comment.id
+                              ? {
+                                  ...item,
+                                  replies: item.replies.map((r) =>
+                                    r.id === reply.id
+                                      ? { ...r, text: e.target.value }
+                                      : r
+                                  ),
+                                }
+                              : item
+                          )
+                        )
+                      }
+                    />
                   </div>
-                  <Textarea
-                    id="reply-comment"
-                    placeholder="Reply Comment"
-                    value={comment.comment}
-                  />
-                </div>
+                ))}
               </div>
             </SortableItem>
           ))}

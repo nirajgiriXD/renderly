@@ -1,15 +1,21 @@
 /**
  * External dependencies.
  */
-import { GripVertical, Plus, ArrowLeftRight, Trash2 } from "lucide-react";
-import { useState } from "react";
+import {
+  GripVertical,
+  Plus,
+  ArrowLeftRight,
+  Trash2,
+  User,
+  Bot,
+} from "lucide-react";
 
 /**
  * Internal dependencies.
  */
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Sortable,
   SortableContent,
@@ -17,26 +23,10 @@ import {
   SortableOverlay,
   SortableItemHandle,
 } from "@/components/ui/sortable";
-import { Button } from "@/components/ui/button";
-import { getInitials } from "@/utils";
+import { useStore } from "@/hooks";
 
 export const Conversation = () => {
-  const [chats, setChats] = useState([
-    {
-      id: "1",
-      avatar: "",
-      comment: "John Doe",
-      reactions: 4,
-      username: "johndoe",
-    },
-    {
-      id: "2",
-      avatar: "",
-      comment: "Jane Smith",
-      reactions: 2,
-      username: "janesmith",
-    },
-  ]);
+  const { form, handleFormChange } = useStore();
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -45,20 +35,33 @@ export const Conversation = () => {
           <Label htmlFor="conversation" className="w-fit">
             Conversation
           </Label>
-          <Button size="sm" className="cursor-pointer">
+          <Button
+            size="sm"
+            className="cursor-pointer"
+            onClick={() =>
+              handleFormChange("data", [
+                ...form["ai-chats"].conversation.data,
+                {
+                  id: Date.now(),
+                  text: "",
+                  sender: "user",
+                },
+              ])
+            }
+          >
             <Plus />
             Add New
           </Button>
         </div>
         <Sortable
-          value={chats}
-          onValueChange={setChats}
+          value={form["ai-chats"].conversation.data}
+          onValueChange={(value) => handleFormChange("data", value)}
           orientation="vertical"
           getItemValue={(item) => item.id}
         >
           <SortableContent className="space-y-4 md:space-y-6">
-            {chats.map((comment) => (
-              <SortableItem key={comment.id} value={comment.id} asChild>
+            {form["ai-chats"].conversation.data.map((message) => (
+              <SortableItem key={message.id} value={message.id} asChild>
                 <div className="space-y-4 border p-3 rounded-md relative">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
@@ -73,13 +76,14 @@ export const Conversation = () => {
                           </button>
                         </SortableItemHandle>
                         <div className="flex items-center gap-2">
-                          <Avatar className="size-5 rounded-none">
-                            <AvatarImage src="" />
-                            <AvatarFallback>
-                              {getInitials("John Doe")}
-                            </AvatarFallback>
-                          </Avatar>
-                          <p>John Doe</p>
+                          <div className="rounded-full bg-muted p-1">
+                            {message.sender === "user" ? (
+                              <User size={16} />
+                            ) : (
+                              <Bot size={16} />
+                            )}
+                          </div>
+                          <p>{message.sender === "user" ? "User" : "Bot"}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
@@ -87,22 +91,53 @@ export const Conversation = () => {
                           size="sm"
                           variant="outline"
                           className="cursor-pointer"
+                          onClick={() =>
+                            handleFormChange(
+                              "data",
+                              form["ai-chats"].conversation.data.map((chat) =>
+                                chat.id === message.id
+                                  ? {
+                                      ...chat,
+                                      sender:
+                                        chat.sender === "user" ? "bot" : "user",
+                                    }
+                                  : chat
+                              )
+                            )
+                          }
                         >
                           <ArrowLeftRight />
                         </Button>
                         <Button
-                          variant="outline"
                           size="sm"
+                          variant="outline"
                           className="cursor-pointer"
+                          onClick={() =>
+                            handleFormChange(
+                              "data",
+                              form["ai-chats"].conversation.data.filter(
+                                (chat) => chat.id !== message.id
+                              )
+                            )
+                          }
                         >
                           <Trash2 className="text-red-600" />
                         </Button>
                       </div>
                     </div>
                     <Textarea
-                      id="comment"
                       placeholder="Comment"
-                      value={comment.comment}
+                      value={message.text}
+                      onChange={(e) =>
+                        handleFormChange(
+                          "data",
+                          form["ai-chats"].conversation.data.map((chat) =>
+                            chat.id === message.id
+                              ? { ...chat, text: e.target.value }
+                              : chat
+                          )
+                        )
+                      }
                     />
                   </div>
                 </div>

@@ -9,8 +9,11 @@ import { User } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useStore } from "@/hooks";
 
 export const Users = () => {
+  const { form, handleFormChange } = useStore();
+
   return (
     <div className="space-y-4 md:space-y-6">
       <div className="space-y-1">
@@ -20,8 +23,19 @@ export const Users = () => {
             htmlFor="sender-profile-image"
             className="cursor-pointer size-9 bg-muted rounded-full shrink-0 flex items-center justify-center"
           >
-            <Avatar className="size-5 text-muted-foreground">
-              <AvatarImage src="" />
+            <Avatar
+              className={`text-muted-foreground ${form.messages.users.sender.profilePicture ? "size-9" : "size-5"}`}
+            >
+              <AvatarImage
+                src={
+                  form.messages.users.sender.profilePicture
+                    ? URL.createObjectURL(
+                        form.messages.users.sender
+                          .profilePicture as unknown as File
+                      )
+                    : ""
+                }
+              />
               <AvatarFallback>
                 <User />
               </AvatarFallback>
@@ -33,9 +47,37 @@ export const Users = () => {
             accept="image/*"
             id="sender-profile-image"
             placeholder="Select an image"
+            onChange={(e) =>
+              handleFormChange("sender", {
+                ...form.messages.users.sender,
+                profilePicture: e.target.files ? e.target.files[0] : null,
+              })
+            }
           />
-          <Input type="text" id="sender-name" placeholder="Name" />
-          <Input type="text" id="sender-username" placeholder="Username" />
+          <Input
+            type="text"
+            id="sender-name"
+            placeholder="Name"
+            value={form.messages.users.sender.name}
+            onChange={(e) =>
+              handleFormChange("sender", {
+                ...form.messages.users.sender,
+                name: e.target.value,
+              })
+            }
+          />
+          <Input
+            type="text"
+            id="sender-username"
+            placeholder="Username"
+            value={form.messages.users.sender.username}
+            onChange={(e) =>
+              handleFormChange("sender", {
+                ...form.messages.users.sender,
+                username: e.target.value,
+              })
+            }
+          />
         </div>
       </div>
       <div className="space-y-1">
@@ -45,8 +87,19 @@ export const Users = () => {
             htmlFor="receiver-profile-image"
             className="cursor-pointer size-9 bg-muted rounded-full shrink-0 flex items-center justify-center"
           >
-            <Avatar className="size-5 text-muted-foreground">
-              <AvatarImage src="" />
+            <Avatar
+              className={`text-muted-foreground ${form.messages.users.receiver.profilePicture ? "size-9" : "size-5"}`}
+            >
+              <AvatarImage
+                src={
+                  form.messages.users.receiver.profilePicture
+                    ? URL.createObjectURL(
+                        form.messages.users.receiver
+                          .profilePicture as unknown as File
+                      )
+                    : ""
+                }
+              />
               <AvatarFallback>
                 <User />
               </AvatarFallback>
@@ -58,9 +111,37 @@ export const Users = () => {
             accept="image/*"
             id="receiver-profile-image"
             placeholder="Select an image"
+            onChange={(e) =>
+              handleFormChange("receiver", {
+                ...form.messages.users.receiver,
+                profilePicture: e.target.files ? e.target.files[0] : null,
+              })
+            }
           />
-          <Input type="text" id="receiver-name" placeholder="Name" />
-          <Input type="text" id="receiver-username" placeholder="Username" />
+          <Input
+            type="text"
+            id="receiver-name"
+            placeholder="Name"
+            value={form.messages.users.receiver.name}
+            onChange={(e) =>
+              handleFormChange("receiver", {
+                ...form.messages.users.receiver,
+                name: e.target.value,
+              })
+            }
+          />
+          <Input
+            type="text"
+            id="receiver-username"
+            placeholder="Username"
+            value={form.messages.users.receiver.username}
+            onChange={(e) =>
+              handleFormChange("receiver", {
+                ...form.messages.users.receiver,
+                username: e.target.value,
+              })
+            }
+          />
         </div>
       </div>
     </div>

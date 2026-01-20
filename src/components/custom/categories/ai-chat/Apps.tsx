@@ -1,12 +1,9 @@
 /**
  * Internal dependencies.
  */
-import { APPS } from "@/constants";
-import { getInitials } from "@/utils";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   Select,
   SelectContent,
@@ -14,13 +11,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { APPS } from "@/constants";
+import { getInitials } from "@/utils";
+import { useStore } from "@/hooks";
 
 export const Apps = () => {
+  const { form, handleFormChange, handleAppToggle } = useStore();
+
   return (
     <div className="space-y-4">
+      {/* Multiple selection */}
       <div className="space-y-2">
         <Label htmlFor="enable-multiselect">Multiple selection</Label>
-        <Select defaultValue="disable">
+        <Select
+          value={form["ai-chats"].apps.enableMultipleSelection}
+          onValueChange={(value) =>
+            handleFormChange("enableMultipleSelection", value)
+          }
+        >
           <SelectTrigger className="w-full" id="enable-multiselect">
             <SelectValue placeholder="Multiple selection" />
           </SelectTrigger>
@@ -30,48 +38,53 @@ export const Apps = () => {
           </SelectContent>
         </Select>
       </div>
-      <ToggleGroup
-        size="sm"
-        type="multiple"
-        variant="outline"
-        spacing={3}
-        className="grid grid-cols-2 w-full"
-      >
-        {APPS["ai-chats"].map((app) => (
-          <ToggleGroupItem
-            asChild
-            key={app.value}
-            value={app.value}
-            aria-label={`Toggle ${app.label}`}
-            className="justify-start py-5 data-[state=off]:*:[svg]:opacity-0 data-[state=on]:*:[svg]:opacity-100"
-          >
-            <Label className="hover:bg-accent/50 flex items-center justify-between gap-3 rounded-lg border has-aria-checked:border-blue-600 has-aria-checked:bg-blue-50 dark:has-aria-checked:border-blue-900 dark:has-aria-checked:bg-blue-950">
+
+      {/* Apps */}
+      <div className="grid grid-cols-2 gap-3">
+        {APPS["ai-chats"].map((app) => {
+          const isSelected = form["ai-chats"].apps.selectedApps[app.value];
+          return (
+            <Label
+              key={app.value}
+              htmlFor={`app-${app.value}`}
+              className={`flex items-center justify-between gap-3 rounded-lg border p-4 cursor-pointer
+                hover:bg-accent/50 transition-colors`}
+            >
               <div className="flex items-center gap-2">
                 <Avatar className="size-5 rounded-none">
                   <AvatarImage src={app.logo} />
                   <AvatarFallback>{getInitials(app.label)}</AvatarFallback>
                 </Avatar>
-                <p className="leading-none font-medium">{app.label}</p>
+                <p className="font-medium leading-none">{app.label}</p>
               </div>
+
               <Checkbox
-                id="toggle-2"
-                className="data-[state=checked]:border-blue-600 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white dark:data-[state=checked]:border-blue-700 dark:data-[state=checked]:bg-blue-700"
+                id={`app-${app.value}`}
+                checked={isSelected}
+                onCheckedChange={(checked: boolean) =>
+                  handleAppToggle(app.value, checked)
+                }
               />
             </Label>
-          </ToggleGroupItem>
-        ))}
-      </ToggleGroup>
+          );
+        })}
+      </div>
+
+      {/* AI Model */}
       <div className="space-y-2">
         <Label htmlFor="model" className="w-fit">
           Model
         </Label>
-        <Select defaultValue="gpt-4.2">
+        <Select
+          value={form["ai-chats"].apps.model}
+          onValueChange={(value) => handleFormChange("model", value)}
+        >
           <SelectTrigger className="w-full" id="model">
             <SelectValue placeholder="Model" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="gpt-4.2">GPT 4.2</SelectItem>
-            <SelectItem value="gpt-5.2">GPT 5.2</SelectItem>
+            <SelectItem value="gpt-4">GPT 4</SelectItem>
+            <SelectItem value="gpt-5">GPT 5</SelectItem>
           </SelectContent>
         </Select>
       </div>

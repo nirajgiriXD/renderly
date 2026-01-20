@@ -13,7 +13,12 @@ import {
 } from "@/components/ui/resizable";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ConfigSection, PreviewSection } from "@/components";
+import {
+  Settings,
+  Download,
+  ConfigSection,
+  PreviewSection,
+} from "@/components";
 import { GitHub } from "@/icons";
 import { CATEGORIES, TABS } from "@/constants";
 import { useWindowWidth, useStore } from "@/hooks";
@@ -26,7 +31,7 @@ export const App = () => {
   const { categoryTab, handleCategoryTabChange } = useStore();
 
   return (
-    <div className="w-full h-screen p-4 md:p-8 bg-gray-200 text-sm">
+    <div className="w-full h-screen text-sm relative">
       <div
         className={`rounded-xl shadow-sm h-full w-full bg-white ${
           isMobile ? "overflow-scroll" : "overflow-hidden"
@@ -41,6 +46,7 @@ export const App = () => {
         >
           {/* Header */}
           <div className="p-4 sm:p-6 flex items-center flex-wrap justify-between gap-2">
+            {/* Left Side */}
             <TabsList className="flex items-center gap-2 p-1 overflow-x-auto w-fit">
               {CATEGORIES.map((category) => (
                 <TabsTrigger
@@ -53,13 +59,15 @@ export const App = () => {
                 </TabsTrigger>
               ))}
             </TabsList>
-            <div>
+
+            {/* Right Side */}
+            <div className="flex items-center gap-3">
+              <Settings />
               <Button size="sm" variant="outline" asChild>
                 <a
                   target="_blank"
                   rel="noreferrer noopener"
                   href="https://github.com/nirajgiriXD/post-preview"
-                  className="text-sm flex items-center gap-2"
                 >
                   <img src={GitHub} alt="GitHub" className="size-5" />
                   View on GitHub
@@ -101,6 +109,8 @@ export const App = () => {
           )}
         </Tabs>
       </div>
+
+      <Download />
     </div>
   );
 };
