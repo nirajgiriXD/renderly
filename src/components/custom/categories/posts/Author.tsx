@@ -1,4 +1,9 @@
 /**
+ * External dependencies.
+ */
+import { User } from "lucide-react";
+
+/**
  * Internal dependencies.
  */
 import { Input } from "@/components/ui/input";
@@ -10,6 +15,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import {
+  checkFileSize,
+  convertFilesToBase64,
+  convertBase64ToFiles,
+} from "@/utils";
+import { MAX_FILE_SIZE_KB } from "@/constants";
 import { useStore } from "@/hooks";
 
 export const Author = () => {
@@ -76,18 +88,40 @@ export const Author = () => {
         <Label htmlFor="profile-picture" className="w-fit">
           Profile Picture
         </Label>
-        <Input
-          type="file"
-          accept="image/*"
-          id="profile-picture"
-          placeholder="Select an image"
-          onChange={(e) =>
-            handleFormChange(
-              "profilePicture",
-              e.target.files ? e.target.files[0] : null
-            )
-          }
-        />
+        <div className="flex items-center gap-2">
+          <Avatar>
+            <AvatarImage
+              src={
+                form.posts.author.profilePicture
+                  ? URL.createObjectURL(
+                      convertBase64ToFiles(
+                        form.posts.author.profilePicture
+                      ) as unknown as File
+                    )
+                  : ""
+              }
+            />
+            <AvatarFallback>
+              <User />
+            </AvatarFallback>
+          </Avatar>
+          <Input
+            type="file"
+            accept="image/*"
+            id="profile-picture"
+            placeholder="Select an image"
+            onChange={async (e) => {
+              const file = e.target.files ? e.target.files[0] : null;
+              if (file && !checkFileSize(file)) {
+                alert(`File size exceeds the limit of ${MAX_FILE_SIZE_KB} KB.`);
+                e.target.value = "";
+                return;
+              }
+              const base64 = file ? await convertFilesToBase64(file) : null;
+              handleFormChange("profilePicture", base64);
+            }}
+          />
+        </div>
       </div>
     </div>
   );

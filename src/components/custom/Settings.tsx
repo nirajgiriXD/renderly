@@ -9,18 +9,25 @@ import { SettingsIcon } from "lucide-react";
 import {
   Dialog,
   DialogTrigger,
-  DialogClose,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogContent,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { useStore } from "@/hooks";
 
 export const Settings = () => {
+  const { settings, handleSettingsChange } = useStore();
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -30,28 +37,57 @@ export const Settings = () => {
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-md">
-        <DialogHeader>
+        <DialogHeader className="border-b pb-4">
           <DialogTitle>Settings</DialogTitle>
           <DialogDescription>
-            Make changes to your settings. Click save when you&apos;re done.
+            Make changes to your settings, changes will be saved automatically.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4">
-          <div className="grid gap-3">
-            <Label htmlFor="name-1">Name</Label>
-            <Input id="name-1" name="name" defaultValue="Pedro Duarte" />
+        <div className="space-y-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="space-y-1">
+              <Label htmlFor="save-on-local-storage">
+                Save data on browser
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Save your data locally on the browser.
+              </p>
+            </div>
+            <Select
+              value={settings.saveOnLocalStorage ? "enable" : "disable"}
+              onValueChange={(value) =>
+                handleSettingsChange("saveOnLocalStorage", value === "enable")
+              }
+            >
+              <SelectTrigger id="save-on-local-storage">
+                <SelectValue placeholder="Save data on browser" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="enable">Enable</SelectItem>
+                <SelectItem value="disable">Disable</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <div className="grid gap-3">
-            <Label htmlFor="username-1">Username</Label>
-            <Input id="username-1" name="username" defaultValue="@peduarte" />
+
+          <div className="flex items-center justify-between gap-4">
+            <div className="space-y-1">
+              <Label htmlFor="clear-on-local-storage">
+                Clear data on browser
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Clear your data stored on the browser.
+              </p>
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              className="min-w-22.5"
+              onClick={() => localStorage.clear()}
+            >
+              Clear
+            </Button>
           </div>
         </div>
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
-          </DialogClose>
-          <Button type="submit">Save</Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

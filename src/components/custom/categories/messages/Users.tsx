@@ -9,6 +9,12 @@ import { User } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import {
+  convertFilesToBase64,
+  convertBase64ToFiles,
+  checkFileSize,
+} from "@/utils";
+import { MAX_FILE_SIZE_KB } from "@/constants";
 import { useStore } from "@/hooks";
 
 export const Users = () => {
@@ -30,8 +36,9 @@ export const Users = () => {
                 src={
                   form.messages.users.sender.profilePicture
                     ? URL.createObjectURL(
-                        form.messages.users.sender
-                          .profilePicture as unknown as File
+                        convertBase64ToFiles(
+                          form.messages.users.sender.profilePicture
+                        ) as unknown as File
                       )
                     : ""
                 }
@@ -47,12 +54,19 @@ export const Users = () => {
             accept="image/*"
             id="sender-profile-image"
             placeholder="Select an image"
-            onChange={(e) =>
+            onChange={async (e) => {
+              const file = e.target.files ? e.target.files[0] : null;
+              if (file && !checkFileSize(file)) {
+                alert(`File size exceeds the limit of ${MAX_FILE_SIZE_KB} KB.`);
+                e.target.value = "";
+                return;
+              }
+              const base64 = file ? await convertFilesToBase64(file) : null;
               handleFormChange("sender", {
                 ...form.messages.users.sender,
-                profilePicture: e.target.files ? e.target.files[0] : null,
-              })
-            }
+                profilePicture: base64,
+              });
+            }}
           />
           <Input
             type="text"
@@ -94,8 +108,9 @@ export const Users = () => {
                 src={
                   form.messages.users.receiver.profilePicture
                     ? URL.createObjectURL(
-                        form.messages.users.receiver
-                          .profilePicture as unknown as File
+                        convertBase64ToFiles(
+                          form.messages.users.receiver.profilePicture
+                        ) as unknown as File
                       )
                     : ""
                 }
@@ -111,12 +126,19 @@ export const Users = () => {
             accept="image/*"
             id="receiver-profile-image"
             placeholder="Select an image"
-            onChange={(e) =>
+            onChange={async (e) => {
+              const file = e.target.files ? e.target.files[0] : null;
+              if (file && !checkFileSize(file)) {
+                alert(`File size exceeds the limit of ${MAX_FILE_SIZE_KB} KB.`);
+                e.target.value = "";
+                return;
+              }
+              const base64 = file ? await convertFilesToBase64(file) : null;
               handleFormChange("receiver", {
                 ...form.messages.users.receiver,
-                profilePicture: e.target.files ? e.target.files[0] : null,
-              })
-            }
+                profilePicture: base64,
+              });
+            }}
           />
           <Input
             type="text"

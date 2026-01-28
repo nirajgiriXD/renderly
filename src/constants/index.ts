@@ -203,7 +203,7 @@ export const AI_CHATS_CONFIG = {
     selectedApps: APPS["ai-chats"].reduce(
       (acc, app) => {
         {
-          acc[app.value] = false;
+          acc[app.value] = app.value === "chatgpt";
           return acc;
         }
       },
@@ -224,9 +224,35 @@ export const AI_CHATS_CONFIG = {
   },
 };
 
+export const AI_MODELS = {
+  chatgpt: [
+    { label: "GPT-3.5", value: "gpt-3.5" },
+    { label: "GPT-4", value: "gpt-4" },
+    { label: "GPT-4 Turbo", value: "gpt-4-turbo" },
+  ],
+  gemini: [
+    { label: "Gemini 3", value: "gemini-3" },
+    { label: "Gemini Pro", value: "gemini-pro" },
+  ],
+  claude: [
+    { label: "Claude Opus", value: "claude-opus" },
+    { label: "Claude Sonet", value: "claude-sonet" },
+  ],
+  grok: [
+    { label: "Grok Alpha", value: "grok-alpha" },
+    { label: "Grok Beta", value: "grok-beta" },
+  ],
+};
+
 export const DEFAULT_CONFIG = {
   posts: POSTS_CONFIG,
   comments: COMMENTS_CONFIG,
   messages: MESSAGES_CONFIG,
   "ai-chats": AI_CHATS_CONFIG,
 };
+
+export const SETTINGS = {
+  saveOnLocalStorage: true,
+};
+
+export const MAX_FILE_SIZE_KB = 300;

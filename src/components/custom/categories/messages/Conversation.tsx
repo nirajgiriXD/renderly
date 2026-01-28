@@ -38,7 +38,7 @@ import {
   SortableOverlay,
   SortableItemHandle,
 } from "@/components/ui/sortable";
-import { getInitials } from "@/utils";
+import { getInitials, convertBase64ToFiles } from "@/utils";
 import { useStore } from "@/hooks";
 
 export const Conversation = () => {
@@ -126,7 +126,9 @@ export const Conversation = () => {
                                 src={
                                   user.profilePicture
                                     ? URL.createObjectURL(
-                                        user.profilePicture as unknown as File
+                                        convertBase64ToFiles(
+                                          user.profilePicture
+                                        ) as unknown as File
                                       )
                                     : ""
                                 }

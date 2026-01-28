@@ -1,19 +1,39 @@
 /**
  * External dependencies.
  */
-import { type ReactNode, useState, useEffect, useCallback } from "react";
+import {
+  type ReactNode,
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+} from "react";
 import { useSearchParams } from "react-router-dom";
 
 /**
  * Internal dependencies.
  */
 import { AppContext } from "@/store/contexts/AppContext";
-import { TABS, DEFAULT_CONFIG } from "@/constants";
-import type { DefaultConfig } from "@/types";
+import { TABS, DEFAULT_CONFIG, SETTINGS } from "@/constants";
+import type { DefaultConfig, SettingsType } from "@/types";
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
+  // Ref to track if local storage is enabled for saving data.
+  const saveOnLocalStorage = useRef(
+    localStorage.getItem("saveOnLocalStorage")
+      ? localStorage.getItem("saveOnLocalStorage") === "true"
+      : SETTINGS.saveOnLocalStorage
+  );
+
+  // Ref to avoid running certain effects on initial mount.
+  const isLocalStorageMounted = useRef(false);
+
+  // State for managing application settings.
+  const [settings, setSettings] = useState(structuredClone(SETTINGS));
+
+  // State for managing the form data.
   const [form, setForm] = useState<DefaultConfig>(
     structuredClone(DEFAULT_CONFIG)
   );
@@ -134,6 +154,25 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     [categoryTab, form, handleFormChange]
   );
 
+  /**
+   * Handle settings change.
+   * @param key - The key of the setting to change.
+   * @param value - The new value to set for the specified key.
+   */
+  const handleSettingsChange = useCallback(
+    <K extends keyof SettingsType>(key: K, value: SettingsType[K]) => {
+      if (key === "saveOnLocalStorage") {
+        saveOnLocalStorage.current = value;
+        localStorage.setItem("saveOnLocalStorage", value ? "true" : "false");
+      }
+      setSettings((prev) => ({
+        ...prev,
+        [key]: value,
+      }));
+    },
+    []
+  );
+
   // Sync URL search params when tabs change.
   useEffect(() => {
     setSearchParams({
@@ -141,6 +180,62 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       configuration: configurationTab,
     });
   }, [categoryTab, configurationTab, setSearchParams]);
+
+  // Initialize settings from ref on mount.
+  useEffect(() => {
+    setSettings((prev) => ({
+      ...prev,
+      saveOnLocalStorage: saveOnLocalStorage.current,
+    }));
+  }, []);
+
+  // Load form data from local storage if enabled.
+  useEffect(() => {
+    const mountLocalStorageData = () => {
+      const postsCategoryData = localStorage.getItem("postsCategoryData");
+      const commentsCategoryData = localStorage.getItem("commentsCategoryData");
+      const messagesCategoryData = localStorage.getItem("messagesCategoryData");
+      const aiChatsCategoryData = localStorage.getItem("aiChatsCategoryData");
+      if (
+        postsCategoryData &&
+        commentsCategoryData &&
+        messagesCategoryData &&
+        aiChatsCategoryData
+      ) {
+        const appData = {
+          posts: JSON.parse(postsCategoryData),
+          comments: JSON.parse(commentsCategoryData),
+          messages: JSON.parse(messagesCategoryData),
+          "ai-chats": JSON.parse(aiChatsCategoryData),
+        };
+        setForm(appData);
+        isLocalStorageMounted.current = true;
+      }
+    };
+
+    if (saveOnLocalStorage.current && !isLocalStorageMounted.current) {
+      mountLocalStorageData();
+    }
+  }, []);
+
+  // Save form data to local storage on change if enabled.
+  useEffect(() => {
+    if (saveOnLocalStorage.current) {
+      localStorage.setItem(
+        "aiChatsCategoryData",
+        JSON.stringify(form["ai-chats"])
+      );
+      localStorage.setItem(
+        "messagesCategoryData",
+        JSON.stringify(form.messages)
+      );
+      localStorage.setItem(
+        "commentsCategoryData",
+        JSON.stringify(form.comments)
+      );
+      localStorage.setItem("postsCategoryData", JSON.stringify(form.posts));
+    }
+  }, [form]);
 
   // Provide the context value to children components.
   const value = {
@@ -152,6 +247,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     handleConfigurationTabChange,
     handleFormChange,
     handleAppToggle,
+    settings,
+    handleSettingsChange,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

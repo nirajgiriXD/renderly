@@ -14,3 +14,7 @@ export type AppearanceConfig = {
   theme: Theme;
   device: Device;
 };
+
+export type SettingsType = {
+  saveOnLocalStorage: boolean;
+};

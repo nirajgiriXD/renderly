@@ -11,6 +11,12 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import {
+  convertFilesToBase64,
+  convertBase64ToFiles,
+  checkFileSize,
+} from "@/utils";
+import { MAX_FILE_SIZE_KB } from "@/constants";
 import { useStore } from "@/hooks";
 
 export const Users = () => {
@@ -32,8 +38,9 @@ export const Users = () => {
                 src={
                   form.comments.users.creator.profilePicture
                     ? URL.createObjectURL(
-                        form.comments.users.creator
-                          .profilePicture as unknown as File
+                        convertBase64ToFiles(
+                          form.comments.users.creator.profilePicture
+                        ) as unknown as File
                       )
                     : ""
                 }
@@ -49,12 +56,19 @@ export const Users = () => {
             accept="image/*"
             id="creator-profile-image"
             placeholder="Select an image"
-            onChange={(e) =>
+            onChange={async (e) => {
+              const file = e.target.files ? e.target.files[0] : null;
+              if (file && !checkFileSize(file)) {
+                alert(`File size exceeds the limit of ${MAX_FILE_SIZE_KB} KB.`);
+                e.target.value = "";
+                return;
+              }
+              const base64 = file ? await convertFilesToBase64(file) : null;
               handleFormChange("creator", {
                 ...form.comments.users.creator,
-                profilePicture: e.target.files ? e.target.files[0] : null,
-              })
-            }
+                profilePicture: base64,
+              });
+            }}
           />
           <Input
             type="text"
@@ -114,7 +128,7 @@ export const Users = () => {
         {form.comments.users.commentors.map((commentor, index) => (
           <div className="flex items-center gap-3" key={`commentors-${index}`}>
             <Label
-              htmlFor="commenter-profile-image"
+              htmlFor={`commenter-profile-image-${index}`}
               className="cursor-pointer size-9 bg-muted rounded-full shrink-0 flex items-center justify-center"
             >
               <Avatar
@@ -124,7 +138,9 @@ export const Users = () => {
                   src={
                     commentor.profilePicture
                       ? URL.createObjectURL(
-                          commentor.profilePicture as unknown as File
+                          convertBase64ToFiles(
+                            commentor.profilePicture
+                          ) as unknown as File
                         )
                       : ""
                   }
@@ -138,23 +154,30 @@ export const Users = () => {
               type="file"
               className="hidden"
               accept="image/*"
-              id="commenter-profile-image"
+              id={`commenter-profile-image-${index}`}
               placeholder="Select an image"
-              onChange={(e) =>
+              onChange={async (e) => {
+                const file = e.target.files ? e.target.files[0] : null;
+                if (file && !checkFileSize(file)) {
+                  alert(
+                    `File size exceeds the limit of ${MAX_FILE_SIZE_KB} KB.`
+                  );
+                  e.target.value = "";
+                  return;
+                }
+                const base64 = file ? await convertFilesToBase64(file) : null;
                 handleFormChange(
                   "commentors",
                   form.comments.users.commentors.map((item, idx) =>
                     idx === index
                       ? {
                           ...item,
-                          profilePicture: e.target.files
-                            ? e.target.files[0]
-                            : null,
+                          profilePicture: base64,
                         }
                       : item
                   )
-                )
-              }
+                );
+              }}
             />
             <Input
               type="text"

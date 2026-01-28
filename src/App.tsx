@@ -62,6 +62,7 @@ export const App = () => {
 
             {/* Right Side */}
             <div className="flex items-center gap-3">
+              <Download />
               <Settings />
               <Button size="sm" variant="outline" asChild>
                 <a
@@ -109,8 +110,6 @@ export const App = () => {
           )}
         </Tabs>
       </div>
-
-      <Download />
     </div>
   );
 };

@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { APPS } from "@/constants";
+import { APPS, AI_MODELS } from "@/constants";
 import { getInitials } from "@/utils";
 import { useStore } from "@/hooks";
 
@@ -61,9 +61,13 @@ export const Apps = () => {
               <Checkbox
                 id={`app-${app.value}`}
                 checked={isSelected}
-                onCheckedChange={(checked: boolean) =>
-                  handleAppToggle(app.value, checked)
-                }
+                onCheckedChange={(checked: boolean) => {
+                  handleAppToggle(app.value, checked);
+                  handleFormChange(
+                    "model",
+                    AI_MODELS[app.value as keyof typeof AI_MODELS][0].value
+                  );
+                }}
               />
             </Label>
           );
@@ -71,23 +75,35 @@ export const Apps = () => {
       </div>
 
       {/* AI Model */}
-      <div className="space-y-2">
-        <Label htmlFor="model" className="w-fit">
-          Model
-        </Label>
-        <Select
-          value={form["ai-chats"].apps.model}
-          onValueChange={(value) => handleFormChange("model", value)}
-        >
-          <SelectTrigger className="w-full" id="model">
-            <SelectValue placeholder="Model" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="gpt-4">GPT 4</SelectItem>
-            <SelectItem value="gpt-5">GPT 5</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      {form["ai-chats"].apps.enableMultipleSelection === "disable" &&
+        Object.entries(form["ai-chats"].apps.selectedApps).filter(
+          ([, value]) => value
+        ).length === 1 && (
+          <div className="space-y-2">
+            <Label htmlFor="model" className="w-fit">
+              Model
+            </Label>
+            <Select
+              value={form["ai-chats"].apps.model}
+              onValueChange={(value) => handleFormChange("model", value)}
+            >
+              <SelectTrigger className="w-full" id="model">
+                <SelectValue placeholder="Model" />
+              </SelectTrigger>
+              <SelectContent>
+                {AI_MODELS[
+                  Object.entries(form["ai-chats"].apps.selectedApps).filter(
+                    ([, value]) => value
+                  )[0][0] as keyof typeof AI_MODELS
+                ].map((model) => (
+                  <SelectItem key={model.value} value={model.value}>
+                    {model.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
     </div>
   );
 };

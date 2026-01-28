@@ -7,7 +7,7 @@ import { createContext } from "react";
  * Internal dependencies.
  */
 import { TABS, DEFAULT_CONFIG } from "@/constants";
-import type { DefaultConfig } from "@/types";
+import type { DefaultConfig, SettingsType } from "@/types";
 
 /**
  * Type definition for the application data context.
@@ -28,6 +28,11 @@ type AppContextType = {
     value: DefaultConfig[Tab][Config][K]
   ) => void;
   handleAppToggle: (appName: string, isEnabled: boolean) => void;
+  settings: SettingsType;
+  handleSettingsChange: <K extends keyof SettingsType>(
+    key: K,
+    value: SettingsType[K]
+  ) => void;
 };
 
 export const AppContext = createContext<AppContextType>({
@@ -39,4 +44,6 @@ export const AppContext = createContext<AppContextType>({
   handleConfigurationTabChange: () => {},
   handleFormChange: () => {},
   handleAppToggle: () => {},
+  settings: {} as SettingsType,
+  handleSettingsChange: () => {},
 });

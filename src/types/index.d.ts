@@ -8,6 +8,3 @@ export * from "./comments";
 export * from "./messages";
 export * from "./ai-chats";
 export * from "./config";
-
-
-export type TEST = { hello: string };
