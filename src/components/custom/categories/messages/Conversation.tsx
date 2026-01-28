@@ -25,7 +25,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Popover,
   PopoverContent,
@@ -38,7 +37,7 @@ import {
   SortableOverlay,
   SortableItemHandle,
 } from "@/components/ui/sortable";
-import { getInitials, convertBase64ToFiles } from "@/utils";
+import { UserProfile } from "@/components/custom/UserProfile";
 import { useStore } from "@/hooks";
 
 export const Conversation = () => {
@@ -121,22 +120,7 @@ export const Conversation = () => {
                             </button>
                           </SortableItemHandle>
                           <div className="flex items-center gap-2">
-                            <Avatar className="size-5 rounded-none">
-                              <AvatarImage
-                                src={
-                                  user.profilePicture
-                                    ? URL.createObjectURL(
-                                        convertBase64ToFiles(
-                                          user.profilePicture
-                                        ) as unknown as File
-                                      )
-                                    : ""
-                                }
-                              />
-                              <AvatarFallback>
-                                {getInitials(user.name)}
-                              </AvatarFallback>
-                            </Avatar>
+                            <UserProfile profilePicture={user.profilePicture} />
                             <p>{user.name}</p>
                           </div>
                         </div>

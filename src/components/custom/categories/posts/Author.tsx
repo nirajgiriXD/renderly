@@ -1,9 +1,4 @@
 /**
- * External dependencies.
- */
-import { User } from "lucide-react";
-
-/**
  * Internal dependencies.
  */
 import { Input } from "@/components/ui/input";
@@ -15,12 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import {
-  checkFileSize,
-  convertFilesToBase64,
-  convertBase64ToFiles,
-} from "@/utils";
+import { UserProfile } from "@/components/custom/UserProfile";
+import { checkFileSize, convertFilesToBase64 } from "@/utils";
 import { MAX_FILE_SIZE_KB } from "@/constants";
 import { useStore } from "@/hooks";
 
@@ -89,22 +80,7 @@ export const Author = () => {
           Profile Picture
         </Label>
         <div className="flex items-center gap-2">
-          <Avatar>
-            <AvatarImage
-              src={
-                form.posts.author.profilePicture
-                  ? URL.createObjectURL(
-                      convertBase64ToFiles(
-                        form.posts.author.profilePicture
-                      ) as unknown as File
-                    )
-                  : ""
-              }
-            />
-            <AvatarFallback>
-              <User />
-            </AvatarFallback>
-          </Avatar>
+          <UserProfile profilePicture={form.posts.author.profilePicture} />
           <Input
             type="file"
             accept="image/*"

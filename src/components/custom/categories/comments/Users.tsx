@@ -1,7 +1,7 @@
 /**
  * External dependencies.
  */
-import { Plus, Trash2, User } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 
 /**
  * Internal dependencies.
@@ -10,12 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import {
-  convertFilesToBase64,
-  convertBase64ToFiles,
-  checkFileSize,
-} from "@/utils";
+import { UserProfile } from "@/components/custom/UserProfile";
+import { convertFilesToBase64, checkFileSize } from "@/utils";
 import { MAX_FILE_SIZE_KB } from "@/constants";
 import { useStore } from "@/hooks";
 
@@ -31,24 +27,9 @@ export const Users = () => {
             htmlFor="creator-profile-image"
             className="cursor-pointer size-9 bg-muted rounded-full shrink-0 flex items-center justify-center"
           >
-            <Avatar
-              className={`text-muted-foreground ${form.comments.users.creator.profilePicture ? "size-9" : "size-5"}`}
-            >
-              <AvatarImage
-                src={
-                  form.comments.users.creator.profilePicture
-                    ? URL.createObjectURL(
-                        convertBase64ToFiles(
-                          form.comments.users.creator.profilePicture
-                        ) as unknown as File
-                      )
-                    : ""
-                }
-              />
-              <AvatarFallback>
-                <User />
-              </AvatarFallback>
-            </Avatar>
+            <UserProfile
+              profilePicture={form.comments.users.creator.profilePicture}
+            />
           </Label>
           <Input
             type="file"
@@ -131,24 +112,7 @@ export const Users = () => {
               htmlFor={`commenter-profile-image-${index}`}
               className="cursor-pointer size-9 bg-muted rounded-full shrink-0 flex items-center justify-center"
             >
-              <Avatar
-                className={`text-muted-foreground ${commentor.profilePicture ? "size-9" : "size-5"}`}
-              >
-                <AvatarImage
-                  src={
-                    commentor.profilePicture
-                      ? URL.createObjectURL(
-                          convertBase64ToFiles(
-                            commentor.profilePicture
-                          ) as unknown as File
-                        )
-                      : ""
-                  }
-                />
-                <AvatarFallback>
-                  <User />
-                </AvatarFallback>
-              </Avatar>
+              <UserProfile profilePicture={commentor.profilePicture} />
             </Label>
             <Input
               type="file"

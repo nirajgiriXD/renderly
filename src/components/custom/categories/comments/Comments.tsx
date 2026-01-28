@@ -10,7 +10,6 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Select,
   SelectContent,
@@ -25,7 +24,7 @@ import {
   SortableOverlay,
   SortableItemHandle,
 } from "@/components/ui/sortable";
-import { getInitials, convertBase64ToFiles } from "@/utils";
+import { UserProfile } from "@/components/custom/UserProfile";
 import { useStore } from "@/hooks";
 
 export const Comments = () => {
@@ -100,23 +99,11 @@ export const Comments = () => {
                           <SelectItem
                             value={form.comments.users.creator.id.toString()}
                           >
-                            <Avatar className="size-5 rounded-none">
-                              <AvatarImage
-                                src={
-                                  form.comments.users.creator.profilePicture
-                                    ? URL.createObjectURL(
-                                        convertBase64ToFiles(
-                                          form.comments.users.creator
-                                            .profilePicture
-                                        ) as unknown as File
-                                      )
-                                    : ""
-                                }
-                              />
-                              <AvatarFallback>
-                                {getInitials(form.comments.users.creator.name)}
-                              </AvatarFallback>
-                            </Avatar>
+                            <UserProfile
+                              profilePicture={
+                                form.comments.users.creator.profilePicture
+                              }
+                            />
                             {form.comments.users.creator.name}
                           </SelectItem>
                           {form.comments.users.commentors.map((user) => (
@@ -124,22 +111,9 @@ export const Comments = () => {
                               key={user.id}
                               value={user.id.toString()}
                             >
-                              <Avatar className="size-5 rounded-none">
-                                <AvatarImage
-                                  src={
-                                    user.profilePicture
-                                      ? URL.createObjectURL(
-                                          convertBase64ToFiles(
-                                            user.profilePicture
-                                          ) as unknown as File
-                                        )
-                                      : ""
-                                  }
-                                />
-                                <AvatarFallback>
-                                  {getInitials(user.name)}
-                                </AvatarFallback>
-                              </Avatar>
+                              <UserProfile
+                                profilePicture={user.profilePicture}
+                              />
                               {user.name}
                             </SelectItem>
                           ))}
@@ -240,25 +214,11 @@ export const Comments = () => {
                             <SelectItem
                               value={form.comments.users.creator.id.toString()}
                             >
-                              <Avatar className="size-5 rounded-none">
-                                <AvatarImage
-                                  src={
-                                    form.comments.users.creator.profilePicture
-                                      ? URL.createObjectURL(
-                                          convertBase64ToFiles(
-                                            form.comments.users.creator
-                                              .profilePicture
-                                          ) as unknown as File
-                                        )
-                                      : ""
-                                  }
-                                />
-                                <AvatarFallback>
-                                  {getInitials(
-                                    form.comments.users.creator.name
-                                  )}
-                                </AvatarFallback>
-                              </Avatar>
+                              <UserProfile
+                                profilePicture={
+                                  form.comments.users.creator.profilePicture
+                                }
+                              />
                               {form.comments.users.creator.name}
                             </SelectItem>
                             {form.comments.users.commentors.map((user) => (
@@ -266,22 +226,9 @@ export const Comments = () => {
                                 key={user.id}
                                 value={user.id.toString()}
                               >
-                                <Avatar className="size-5 rounded-none">
-                                  <AvatarImage
-                                    src={
-                                      user.profilePicture
-                                        ? URL.createObjectURL(
-                                            convertBase64ToFiles(
-                                              user.profilePicture
-                                            ) as unknown as File
-                                          )
-                                        : ""
-                                    }
-                                  />
-                                  <AvatarFallback>
-                                    {getInitials(user.name)}
-                                  </AvatarFallback>
-                                </Avatar>
+                                <UserProfile
+                                  profilePicture={user.profilePicture}
+                                />
                                 {user.name}
                               </SelectItem>
                             ))}

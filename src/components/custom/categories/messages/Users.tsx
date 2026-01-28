@@ -1,19 +1,10 @@
 /**
- * External dependencies.
- */
-import { User } from "lucide-react";
-
-/**
  * Internal dependencies.
  */
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import {
-  convertFilesToBase64,
-  convertBase64ToFiles,
-  checkFileSize,
-} from "@/utils";
+import { UserProfile } from "@/components/custom/UserProfile";
+import { convertFilesToBase64, checkFileSize } from "@/utils";
 import { MAX_FILE_SIZE_KB } from "@/constants";
 import { useStore } from "@/hooks";
 
@@ -29,24 +20,9 @@ export const Users = () => {
             htmlFor="sender-profile-image"
             className="cursor-pointer size-9 bg-muted rounded-full shrink-0 flex items-center justify-center"
           >
-            <Avatar
-              className={`text-muted-foreground ${form.messages.users.sender.profilePicture ? "size-9" : "size-5"}`}
-            >
-              <AvatarImage
-                src={
-                  form.messages.users.sender.profilePicture
-                    ? URL.createObjectURL(
-                        convertBase64ToFiles(
-                          form.messages.users.sender.profilePicture
-                        ) as unknown as File
-                      )
-                    : ""
-                }
-              />
-              <AvatarFallback>
-                <User />
-              </AvatarFallback>
-            </Avatar>
+            <UserProfile
+              profilePicture={form.messages.users.sender.profilePicture}
+            />
           </Label>
           <Input
             type="file"
@@ -101,24 +77,9 @@ export const Users = () => {
             htmlFor="receiver-profile-image"
             className="cursor-pointer size-9 bg-muted rounded-full shrink-0 flex items-center justify-center"
           >
-            <Avatar
-              className={`text-muted-foreground ${form.messages.users.receiver.profilePicture ? "size-9" : "size-5"}`}
-            >
-              <AvatarImage
-                src={
-                  form.messages.users.receiver.profilePicture
-                    ? URL.createObjectURL(
-                        convertBase64ToFiles(
-                          form.messages.users.receiver.profilePicture
-                        ) as unknown as File
-                      )
-                    : ""
-                }
-              />
-              <AvatarFallback>
-                <User />
-              </AvatarFallback>
-            </Avatar>
+            <UserProfile
+              profilePicture={form.messages.users.receiver.profilePicture}
+            />
           </Label>
           <Input
             type="file"
