@@ -8,7 +8,6 @@ import { User } from "lucide-react";
  * Internal dependencies.
  */
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { convertBase64ToFiles } from "@/utils";
 
 export const UserProfile = memo(
   ({
@@ -23,13 +22,7 @@ export const UserProfile = memo(
         className={`text-muted-foreground ${profilePicture ? "size-9" : "size-5"} ${className ?? ""}`}
       >
         <AvatarImage
-          src={
-            profilePicture
-              ? URL.createObjectURL(
-                  convertBase64ToFiles(profilePicture) as unknown as File
-                )
-              : ""
-          }
+          src={profilePicture || ""}
         />
         <AvatarFallback>
           <User />

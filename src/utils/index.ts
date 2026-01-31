@@ -1,9 +1,4 @@
 /**
- * Internal dependencies.
- */
-import { MAX_FILE_SIZE_KB } from "@/constants";
-
-/**
  * Extracts initials from a name.
  * @param {string} name - The name to process.
  * @returns {string} Initials in uppercase, or an empty string if empty.
@@ -37,50 +32,67 @@ export const getInitials = (name: string): string => {
 export const convertFilesToBase64 = (file: File) =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
+    reader.onload = () => {
+      const result = reader.result;
+      if (typeof result === "string") {
+        const nameParam = `;name=${encodeURIComponent(file.name)}`;
+        const modified = result.replace(";base64", `${nameParam};base64`);
+        resolve(modified);
+      } else {
+        resolve(result);
+      }
+    };
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
 
 /**
- * Converts a Base64 string back to a File object.
- * @param base64String - The base64 string (data URL format).
- * @param filename - The name to give the file.
- * @returns A File object or null if conversion fails.
+ * Formats a count to a string with K or M suffix.
+ * @param count - The count to format.
+ * @returns The formatted count string.
  */
-export const convertBase64ToFiles = (
-  base64String: string,
-  filename: string = "file"
-): File | null => {
-  try {
-    // Extract the base64 data and mime type
-    const matches = base64String.match(/^data:([^;]+);base64,(.+)$/);
-    if (!matches) return null;
-
-    const mimeType = matches[1];
-    const base64Data = matches[2];
-
-    // Convert base64 to binary
-    const binaryString = atob(base64Data);
-    const bytes = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
-    }
-
-    // Create and return File object
-    return new File([bytes], filename, { type: mimeType });
-  } catch {
-    return null;
+export const formatCount = (count: number): string => {
+  if (count >= 1000000000) {
+    return `${Math.floor(count / 1000000000)}B`;
+  } else if (count >= 1000000) {
+    return `${Math.floor(count / 1000000)}M`;
+  } else if (count >= 1000) {
+    return `${Math.floor(count / 1000)}K`;
   }
+  return count.toString();
 };
 
 /**
- * Checks if a file's size is within the specified limit.
- * @param file - The file to check.
- * @param maxSizeInKB - The maximum allowed size in kilobytes. Defaults to MAX_FILE_SIZE_KB constant.
- * @returns True if the file size is within the limit, false otherwise.
+ * Formats a date to a string with time ago.
+ * @param date - The date to format.
+ * @param isShortHand - Whether to use shorthand format.
+ * @returns The formatted date string.
  */
-export const checkFileSize = (file: File, maxSizeInKB?: number): boolean => {
-  const maxSizeInBytes = (maxSizeInKB || MAX_FILE_SIZE_KB) * 1024;
-  return file.size <= maxSizeInBytes;
+export const timeAgo = ({
+  date,
+  isShortHand,
+}: {
+  date: Date;
+  isShortHand?: boolean;
+}): string => {
+  const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  const months = Math.floor(days / 30);
+  const years = Math.floor(days / 365);
+
+  if (years > 0) {
+    return `${years}${isShortHand ? "y" : ` year${years === 1 ? "" : "s"} ago`}`;
+  } else if (months > 0) {
+    return `${months}${isShortHand ? "m" : ` month${months === 1 ? "" : "s"} ago`}`;
+  } else if (days > 0) {
+    return `${days}${isShortHand ? "d" : ` day${days === 1 ? "" : "s"} ago`}`;
+  } else if (hours > 0) {
+    return `${hours}${isShortHand ? "h" : ` hour${hours === 1 ? "" : "s"} ago`}`;
+  } else if (minutes > 0) {
+    return `${minutes}${isShortHand ? "m" : ` minute${minutes === 1 ? "" : "s"} ago`}`;
+  } else {
+    return isShortHand ? "now" : "just now";
+  }
 };

@@ -50,7 +50,7 @@ export const Settings = () => {
                 Save data on browser
               </Label>
               <p className="text-sm text-muted-foreground">
-                Save your data locally on the browser.
+                Save text data locally on the browser.
               </p>
             </div>
             <Select
@@ -75,7 +75,7 @@ export const Settings = () => {
                 Clear data on browser
               </Label>
               <p className="text-sm text-muted-foreground">
-                Clear your data stored on the browser.
+                Clear text data stored on the browser.
               </p>
             </div>
             <Button

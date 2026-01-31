@@ -1,8 +1,7 @@
 /**
  * Internal dependencies.
  */
-import type { AppsConfigBase } from "@/types/apps";
-import type { AppearanceConfig } from "@/types/appearance";
+import type { AppsConfigBase, AppearanceConfig } from "@/types/general";
 
 export type MessagesConfig = {
   apps: AppsConfigBase;

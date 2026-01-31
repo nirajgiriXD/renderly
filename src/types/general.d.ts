@@ -1,4 +1,4 @@
-export type EnableMultipleAppSelection = "enabled" | "disabled";
+export type EnableMultipleAppSelection = "enable" | "disable";
 
 export type Theme = "light" | "dark";
 export type Device = "android" | "ios" | "web";

@@ -11,8 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { UserProfile } from "@/components/custom/UserProfile";
-import { convertFilesToBase64, checkFileSize } from "@/utils";
-import { MAX_FILE_SIZE_KB } from "@/constants";
+import { convertFilesToBase64 } from "@/utils";
 import { useStore } from "@/hooks";
 
 export const Users = () => {
@@ -39,11 +38,6 @@ export const Users = () => {
             placeholder="Select an image"
             onChange={async (e) => {
               const file = e.target.files ? e.target.files[0] : null;
-              if (file && !checkFileSize(file)) {
-                alert(`File size exceeds the limit of ${MAX_FILE_SIZE_KB} KB.`);
-                e.target.value = "";
-                return;
-              }
               const base64 = file ? await convertFilesToBase64(file) : null;
               handleFormChange("creator", {
                 ...form.comments.users.creator,
@@ -122,13 +116,6 @@ export const Users = () => {
               placeholder="Select an image"
               onChange={async (e) => {
                 const file = e.target.files ? e.target.files[0] : null;
-                if (file && !checkFileSize(file)) {
-                  alert(
-                    `File size exceeds the limit of ${MAX_FILE_SIZE_KB} KB.`
-                  );
-                  e.target.value = "";
-                  return;
-                }
                 const base64 = file ? await convertFilesToBase64(file) : null;
                 handleFormChange(
                   "commentors",

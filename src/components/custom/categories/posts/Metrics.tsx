@@ -3,6 +3,7 @@
  */
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { DateTimePicker } from "@/components/custom/DateTimeSelector";
 import { useStore } from "@/hooks";
 
 export const Metrics = () => {
@@ -62,12 +63,14 @@ export const Metrics = () => {
         <Label htmlFor="date" className="w-fit">
           Date
         </Label>
-        <Input
-          type="date"
-          id="date"
-          placeholder="Date"
-          value={form.posts.metrics.date}
-          onChange={(e) => handleFormChange("date", e.target.value)}
+        <DateTimePicker
+          value={
+            form.posts.metrics.date
+              ? new Date(form.posts.metrics.date)
+              : undefined
+          }
+          onChange={(date) => handleFormChange("date", date)}
+          placeholder="Pick event date and time"
         />
       </div>
     </div>

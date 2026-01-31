@@ -11,8 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UserProfile } from "@/components/custom/UserProfile";
-import { checkFileSize, convertFilesToBase64 } from "@/utils";
-import { MAX_FILE_SIZE_KB } from "@/constants";
+import { convertFilesToBase64 } from "@/utils";
 import { useStore } from "@/hooks";
 
 export const Author = () => {
@@ -88,11 +87,6 @@ export const Author = () => {
             placeholder="Select an image"
             onChange={async (e) => {
               const file = e.target.files ? e.target.files[0] : null;
-              if (file && !checkFileSize(file)) {
-                alert(`File size exceeds the limit of ${MAX_FILE_SIZE_KB} KB.`);
-                e.target.value = "";
-                return;
-              }
               const base64 = file ? await convertFilesToBase64(file) : null;
               handleFormChange("profilePicture", base64);
             }}

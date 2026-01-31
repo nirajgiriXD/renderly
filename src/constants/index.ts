@@ -254,5 +254,3 @@ export const DEFAULT_CONFIG = {
 export const SETTINGS = {
   saveOnLocalStorage: true,
 };
-
-export const MAX_FILE_SIZE_KB = 300;

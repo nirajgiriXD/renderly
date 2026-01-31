@@ -4,6 +4,7 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { convertFilesToBase64 } from "@/utils";
 import { useStore } from "@/hooks";
 
 export const Content = () => {
@@ -31,9 +32,11 @@ export const Content = () => {
           accept="image/*, video/*"
           id="media"
           placeholder="Select an image or video"
-          onChange={(e) =>
-            handleFormChange("media", e.target.files?.[0] || null)
-          }
+          onChange={async (e) => {
+            const file = e.target.files ? e.target.files[0] : null;
+            const base64 = file ? await convertFilesToBase64(file) : null;
+            handleFormChange("media", base64);
+          }}
         />
       </div>
     </div>

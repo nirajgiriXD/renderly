@@ -208,7 +208,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           messages: JSON.parse(messagesCategoryData),
           "ai-chats": JSON.parse(aiChatsCategoryData),
         };
-        setForm(appData);
+        setForm((prev) => ({ ...prev, ...appData }));
         isLocalStorageMounted.current = true;
       }
     };
@@ -225,15 +225,60 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         "aiChatsCategoryData",
         JSON.stringify(form["ai-chats"])
       );
-      localStorage.setItem(
-        "messagesCategoryData",
-        JSON.stringify(form.messages)
-      );
+
+      // Do not save profile picture to local storage.
+      const commentsData = {
+        ...form.comments,
+        users: {
+          ...form.comments.users,
+          creator: {
+            ...form.comments.users.creator,
+            profilePicture: "",
+          },
+          commentors: form.comments.users.commentors.map((commentor) => ({
+            ...commentor,
+            profilePicture: "",
+          })),
+        },
+      };
       localStorage.setItem(
         "commentsCategoryData",
-        JSON.stringify(form.comments)
+        JSON.stringify(commentsData)
       );
-      localStorage.setItem("postsCategoryData", JSON.stringify(form.posts));
+
+      // Do not save profile picture to local storage.
+      const messagesData = {
+        ...form.messages,
+        users: {
+          ...form.messages.users,
+          sender: {
+            ...form.messages.users.sender,
+            profilePicture: "",
+          },
+          receiver: {
+            ...form.messages.users.receiver,
+            profilePicture: "",
+          },
+        },
+      };
+      localStorage.setItem(
+        "messagesCategoryData",
+        JSON.stringify(messagesData)
+      );
+
+      // Do not save profile picture and media to local storage.
+      const postsData = {
+        ...form.posts,
+        author: {
+          ...form.posts.author,
+          profilePicture: "",
+        },
+        content: {
+          ...form.posts.content,
+          media: "",
+        },
+      };
+      localStorage.setItem("postsCategoryData", JSON.stringify(postsData));
     }
   }, [form]);
 
