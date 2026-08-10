@@ -1,115 +1,105 @@
 /**
  * External dependencies.
  */
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { Eye, SlidersHorizontal } from "lucide-react";
 
 /**
  * Internal dependencies.
  */
+import { AppHeader } from "@/components/layout/AppHeader";
+import { PreviewPanel } from "@/components/layout/PreviewPanel";
+import { ConfigPanel } from "@/features/config/ConfigPanel";
 import {
-  ResizablePanel,
   ResizableHandle,
+  ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Settings,
-  Download,
-  ConfigSection,
-  PreviewSection,
-} from "@/components";
-import { GitHub } from "@/icons";
-import { CATEGORIES, TABS } from "@/constants";
-import { useWindowWidth, useStore } from "@/hooks";
+import { Toaster } from "@/components/ui/sonner";
+import { cn } from "@/lib/utils";
+import { useIsDesktop } from "@/hooks";
 
+/**
+ * Workspace shell.
+ *
+ * Wide viewports get a resizable editor/preview split. Narrow ones would make
+ * that split unusable, so they switch between the two halves instead of
+ * stacking them into one long scroll.
+ */
 export const App = () => {
-  const previewRef = useRef<HTMLDivElement>(null);
-
-  const { isMobile } = useWindowWidth();
-
-  const { categoryTab, handleCategoryTabChange } = useStore();
+  const stageRef = useRef<HTMLDivElement>(null);
+  const isDesktop = useIsDesktop();
+  const [mobileView, setMobileView] = useState<"edit" | "preview">("edit");
 
   return (
-    <div className="w-full h-screen text-sm relative">
-      <div
-        className={`rounded-xl shadow-sm h-full w-full bg-white ${
-          isMobile ? "overflow-scroll" : "overflow-hidden"
-        }`}
-      >
-        <Tabs
-          defaultValue={categoryTab}
-          className="gap-0 h-full pb-4 sm:pb-6"
-          onValueChange={(value) =>
-            handleCategoryTabChange(value as keyof typeof TABS)
-          }
-        >
-          {/* Header */}
-          <div className="p-4 sm:p-6 flex items-center flex-wrap justify-between gap-2">
-            {/* Left Side */}
-            <TabsList className="flex items-center gap-2 p-1 overflow-x-auto w-fit">
-              {CATEGORIES.map((category) => (
-                <TabsTrigger
-                  key={`category-${category.value}`}
-                  value={category.value}
-                  className="cursor-pointer"
-                >
-                  <category.icon />
-                  {category.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
+    <div className="flex h-dvh flex-col overflow-hidden bg-background text-foreground">
+      <AppHeader exportTargetRef={stageRef} />
 
-            {/* Right Side */}
-            <div className="flex items-center gap-3">
-              <Download />
-              <Settings />
-              <Button size="sm" variant="outline" asChild>
-                <a
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  href="https://github.com/nirajgiriXD/post-preview"
-                >
-                  <img src={GitHub} alt="GitHub" className="size-5" />
-                  View on GitHub
-                </a>
-              </Button>
-            </div>
-          </div>
-
-          {isMobile ? (
-            <div className="flex flex-col h-full w-full">
-              {/* Config Section */}
-              <ConfigSection />
-
-              {/* Preview Section */}
-              <div ref={previewRef} className="h-full">
-                <PreviewSection />
-              </div>
-            </div>
-          ) : (
-            <ResizablePanelGroup
-              className="h-full w-full"
-              direction="horizontal"
+      <main className="min-h-0 flex-1">
+        {isDesktop ? (
+          <ResizablePanelGroup orientation="horizontal" className="h-full">
+            <ResizablePanel
+              id="editor"
+              defaultSize="46%"
+              minSize="28%"
+              className="h-full"
             >
-              {/* Config Section */}
-              <ResizablePanel defaultSize={50} minSize={30}>
-                <ConfigSection />
-              </ResizablePanel>
+              <ConfigPanel className="h-full" />
+            </ResizablePanel>
 
-              {/* Resizable Handle */}
-              <ResizableHandle withHandle />
+            <ResizableHandle withHandle />
 
-              {/* Preview Section */}
-              <ResizablePanel defaultSize={50} minSize={30}>
-                <div ref={previewRef} className="h-full">
-                  <PreviewSection />
-                </div>
-              </ResizablePanel>
-            </ResizablePanelGroup>
-          )}
-        </Tabs>
-      </div>
+            <ResizablePanel
+              id="preview"
+              defaultSize="54%"
+              minSize="30%"
+              className="h-full"
+            >
+              <PreviewPanel stageRef={stageRef} className="h-full" />
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        ) : (
+          <div className="flex h-full flex-col">
+            <div className="min-h-0 flex-1">
+              {mobileView === "edit" ? (
+                <ConfigPanel className="h-full" />
+              ) : (
+                <PreviewPanel stageRef={stageRef} className="h-full" />
+              )}
+            </div>
+
+            <nav
+              aria-label="Workspace view"
+              className="grid shrink-0 grid-cols-2 gap-1 border-t bg-background p-2"
+            >
+              {(
+                [
+                  { id: "edit", label: "Edit", icon: SlidersHorizontal },
+                  { id: "preview", label: "Preview", icon: Eye },
+                ] as const
+              ).map((entry) => (
+                <button
+                  key={entry.id}
+                  type="button"
+                  aria-current={mobileView === entry.id ? "page" : undefined}
+                  onClick={() => setMobileView(entry.id)}
+                  className={cn(
+                    "flex cursor-pointer items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                    mobileView === entry.id
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-muted"
+                  )}
+                >
+                  <entry.icon className="size-4" aria-hidden />
+                  {entry.label}
+                </button>
+              ))}
+            </nav>
+          </div>
+        )}
+      </main>
+
+      <Toaster />
     </div>
   );
 };
