@@ -9,7 +9,7 @@ import { BrowserRouter as Router } from "react-router-dom";
  * Internal dependencies.
  */
 import "@/styles/global.css";
-import { App } from "@/app.tsx";
+import { App } from "@/App.tsx";
 import { APP_BASENAME } from "@/constants";
 import { AppProvider } from "@/store/providers/AppProvider";
 
