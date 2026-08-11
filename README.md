@@ -1,4 +1,4 @@
-# Post Preview
+# Renderly
 
 See exactly how your content will look on the platform it is going to — before
 you publish it. Pick a content type in the rail, fill in the inspector, watch
@@ -27,7 +27,7 @@ platforms side by side.
 
 ```bash
 npm install
-npm run dev      # http://localhost:5173/post-preview/
+npm run dev      # http://localhost:5173/renderly/
 ```
 
 | Script               | Does                                            |

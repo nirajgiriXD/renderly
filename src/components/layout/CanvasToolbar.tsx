@@ -17,6 +17,7 @@ import {
 /**
  * Internal dependencies.
  */
+import { ExportMenu } from "./ExportMenu";
 import { Button } from "@/components/ui/button";
 import { Segmented } from "@/components/ui/segmented";
 import { Hint } from "@/components/ui/tooltip";
@@ -27,6 +28,7 @@ import {
   stepZoom,
   supportsCanvasZoom,
 } from "@/lib/zoom";
+import type { StageExport } from "@/hooks";
 import { useConfig, useConfigActions } from "@/store";
 import type { CategoryId, PreviewDevice, PreviewTheme } from "@/types";
 
@@ -47,8 +49,11 @@ const THEMES: { value: PreviewTheme; label: string }[] = [
 
 const THEME_ICONS = { light: Sun, dark: Moon };
 
-const Divider = () => (
-  <span aria-hidden className="mx-0.5 h-5 w-px shrink-0 bg-border" />
+const Divider = ({ className }: { className?: string }) => (
+  <span
+    aria-hidden
+    className={cn("mx-0.5 h-5 w-px shrink-0 bg-border", className)}
+  />
 );
 
 /**
@@ -58,6 +63,10 @@ const Divider = () => (
  * content says — so they belong beside the stage rather than buried in the
  * inspector's form. Everything here changes what you are looking at right now
  * and nothing here changes what would be exported as JSON.
+ *
+ * Export sits at the end of the same row: what it writes out is whatever this
+ * toolbar has just been used to set up, and the control that ends that
+ * sequence should be within reach of the ones that start it.
  */
 export const CanvasToolbar = ({
   category,
@@ -67,6 +76,7 @@ export const CanvasToolbar = ({
   onZoomChange,
   onCopyJson,
   jsonCopied,
+  exportActions,
 }: {
   category: CategoryId;
   view: CanvasView;
@@ -75,6 +85,7 @@ export const CanvasToolbar = ({
   onZoomChange: (zoom: number) => void;
   onCopyJson: () => void;
   jsonCopied: boolean;
+  exportActions: StageExport;
 }) => {
   const appearance = useConfig()[category].appearance;
   const { setAppearance } = useConfigActions();
@@ -96,7 +107,14 @@ export const CanvasToolbar = ({
         ]}
       />
 
-      <div className="ml-auto flex items-center gap-1.5">
+      {/*
+        Wrapping rather than compressing: with Export on the row too, a phone
+        cannot fit every control on one line, and a squeezed segmented control
+        crushes its icons to slivers before anything visibly gives way. Below
+        `lg` the view controls take the second line and Export is reordered up
+        beside Preview / JSON, where there is room for it.
+      */}
+      <div className="order-2 ml-auto flex flex-wrap items-center justify-end gap-1.5 lg:order-0">
         {view === "json" ? (
           <Button size="sm" variant="outline" onClick={onCopyJson}>
             {jsonCopied ? (
@@ -111,6 +129,7 @@ export const CanvasToolbar = ({
             <Segmented
               iconOnly
               size="sm"
+              className="shrink-0"
               label="Preview device"
               value={appearance.device}
               onChange={(device) => setAppearance(category, { device })}
@@ -124,6 +143,7 @@ export const CanvasToolbar = ({
             <Segmented
               iconOnly
               size="sm"
+              className="shrink-0"
               label="Preview theme"
               value={appearance.theme}
               onChange={(theme) => setAppearance(category, { theme })}
@@ -160,7 +180,7 @@ export const CanvasToolbar = ({
 
             <div
               className={cn(
-                "items-center rounded-lg border border-border/70 bg-sunken p-0.5",
+                "shrink-0 items-center rounded-lg border border-border/70 bg-sunken p-0.5",
                 zoomable ? "flex" : "hidden"
               )}
             >
@@ -206,6 +226,11 @@ export const CanvasToolbar = ({
             </div>
           </>
         )}
+      </div>
+
+      <div className="order-1 ml-auto flex items-center gap-1.5 lg:order-0 lg:ml-0">
+        <Divider className="hidden lg:block" />
+        <ExportMenu actions={exportActions} />
       </div>
     </div>
   );

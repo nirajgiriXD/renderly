@@ -29,9 +29,16 @@ const MODE_OPTIONS = [
  */
 export const TopBar = ({
   exportActions,
+  showExport,
   onOpenCommands,
 }: {
   exportActions: StageExport;
+  /**
+   * Export belongs to the canvas toolbar. The shell turns it on here only
+   * for the narrow layout, where the canvas — toolbar and all — is swapped
+   * out while the inspector has the screen.
+   */
+  showExport: boolean;
   onOpenCommands: () => void;
 }) => {
   const { resolvedScheme, updateSettings } = useSettings();
@@ -47,12 +54,12 @@ export const TopBar = ({
         )}
       >
         <img
-          src={`${import.meta.env.BASE_URL}logo.png`}
+          src={`${import.meta.env.BASE_URL}logo.svg`}
           alt=""
           className="size-7 rounded-lg shadow-xs ring-1 ring-black/5"
         />
         <span className="hidden text-[0.9375rem] font-semibold leading-none tracking-tight sm:block">
-          Post&nbsp;Preview
+          Renderly
         </span>
       </a>
 
@@ -70,7 +77,7 @@ export const TopBar = ({
           </kbd>
         </Button>
 
-        <ExportMenu actions={exportActions} />
+        {showExport && <ExportMenu actions={exportActions} />}
 
         <span aria-hidden className="mx-1 hidden h-5 w-px bg-border sm:block" />
 
@@ -94,7 +101,7 @@ export const TopBar = ({
         <Hint label="Source on GitHub">
           <Button size="icon-sm" variant="ghost" asChild className="lg:hidden">
             <a
-              href="https://github.com/nirajgiriXD/post-preview"
+              href="https://github.com/nirajgiriXD/renderly"
               target="_blank"
               rel="noreferrer noopener"
               aria-label="View the source on GitHub"

@@ -280,6 +280,21 @@ export const DEFAULT_SETTINGS: Settings = {
 };
 
 export const STORAGE_KEYS = {
+  config: "renderly:config:v2",
+  settings: "renderly:settings:v2",
+} as const;
+
+/**
+ * Where those entries lived before the app was renamed to Renderly.
+ *
+ * `localStorage` is keyed by origin rather than by path, so everything the old
+ * build saved is still sitting on the same domain under the old prefix.
+ * Falling back to it on load is what keeps the rename from looking, to anyone
+ * who had work in progress, like the app threw their drafts away. The old
+ * entries are left in place: nothing is gained by deleting them, and a visitor
+ * on a cached build still needs to find them.
+ */
+export const LEGACY_STORAGE_KEYS = {
   config: "post-preview:config:v2",
   settings: "post-preview:settings:v2",
 } as const;
@@ -289,6 +304,6 @@ export const STORAGE_KEYS = {
  *
  * The deploy path is configured once, in `vite.config.ts`. Repeating it here
  * as a literal is what lets the two drift apart and produce a doubled prefix
- * like `/post-preview/post-preview`.
+ * like `/renderly/renderly`.
  */
 export const APP_BASENAME = import.meta.env.BASE_URL.replace(/\/$/, "") || "/";

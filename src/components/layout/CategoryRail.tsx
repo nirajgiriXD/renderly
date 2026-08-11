@@ -64,7 +64,7 @@ export const CategoryRail = () => {
         <Hint label="View the source on GitHub" side="right">
           <Button size="icon-sm" variant="ghost" asChild>
             <a
-              href="https://github.com/nirajgiriXD/post-preview"
+              href="https://github.com/nirajgiriXD/renderly"
               target="_blank"
               rel="noreferrer noopener"
               aria-label="View the source on GitHub"

@@ -8,7 +8,11 @@ import type { ReactNode } from "react";
  * Internal dependencies.
  */
 import { SettingsContext } from "./contexts";
-import { DEFAULT_SETTINGS, STORAGE_KEYS } from "@/constants";
+import {
+  DEFAULT_SETTINGS,
+  LEGACY_STORAGE_KEYS,
+  STORAGE_KEYS,
+} from "@/constants";
 import { mergeWithDefaults, readJSON, writeJSON } from "@/lib/storage";
 import type { Settings } from "@/types";
 
@@ -22,7 +26,8 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const [settings, setSettings] = useState<Settings>(() =>
     mergeWithDefaults(
       { ...DEFAULT_SETTINGS },
-      readJSON<Partial<Settings>>(STORAGE_KEYS.settings)
+      readJSON<Partial<Settings>>(STORAGE_KEYS.settings) ??
+        readJSON<Partial<Settings>>(LEGACY_STORAGE_KEYS.settings)
     )
   );
 

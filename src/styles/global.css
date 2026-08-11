@@ -4,7 +4,7 @@
 /*
  * The studio's typefaces, served from the bundle rather than a font CDN.
  *
- * Post Preview makes a promise — nothing leaves the tab — and a stylesheet
+ * Renderly makes a promise — nothing leaves the tab — and a stylesheet
  * fetched from a third party would quietly break it by handing that party the
  * visitor's IP on every load. Self-hosting also means the rasteriser can read
  * these rules when it embeds fonts, which a cross-origin sheet forbids.
@@ -40,7 +40,7 @@
 
 /*
  * ---------------------------------------------------------------------------
- * Post Preview — design system
+ * Renderly — design system
  * ---------------------------------------------------------------------------
  *
  * Two colour worlds live in this app and they must never bleed into each

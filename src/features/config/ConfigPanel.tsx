@@ -111,7 +111,7 @@ export const ConfigPanel = ({ className }: { className?: string }) => {
 
           <ConfirmDialog
             title={`Reset ${descriptor.label.toLowerCase()}?`}
-            description={`Everything you have written under ${descriptor.label} will be replaced by the example content Post Preview ships with. Other categories are untouched.`}
+            description={`Everything you have written under ${descriptor.label} will be replaced by the example content Renderly ships with. Other categories are untouched.`}
             confirmLabel="Reset"
             onConfirm={() => {
               resetCategory(category);

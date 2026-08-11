@@ -93,7 +93,7 @@ export const SettingsDialog = () => {
       importConfig(parsed);
       toast.success("Configuration imported.");
     } catch {
-      toast.error("That file is not valid Post Preview JSON.");
+      toast.error("That file is not valid Renderly JSON.");
     }
   };
 
@@ -149,7 +149,7 @@ export const SettingsDialog = () => {
 
             <SettingRow
               title="Import a workspace"
-              description="Load a JSON file exported from Post Preview."
+              description="Load a JSON file exported from Renderly."
               control={
                 <Button
                   size="sm"
@@ -177,7 +177,7 @@ export const SettingsDialog = () => {
             <div className="flex flex-wrap gap-2 px-4 pb-4 pt-3">
               <ConfirmDialog
                 title="Restore the example content?"
-                description="Everything you have written in all four categories will be replaced by the content Post Preview ships with."
+                description="Everything you have written in all four categories will be replaced by the content Renderly ships with."
                 confirmLabel="Reset everything"
                 onConfirm={() => {
                   resetAll();

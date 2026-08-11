@@ -18,6 +18,7 @@ import { PreviewStage } from "@/features/preview/PreviewStage";
 import { PLATFORMS_BY_CATEGORY } from "@/constants";
 import { cn } from "@/lib/utils";
 import { useClipboard } from "@/hooks";
+import type { StageExport } from "@/hooks";
 import { stripDataUrls } from "@/lib/storage";
 import { stepZoom, zoomByWheel } from "@/lib/zoom";
 import { useConfig, useWorkspace } from "@/store";
@@ -41,9 +42,11 @@ const DEVICE_LABEL = {
  */
 export const CanvasPanel = ({
   stageRef,
+  exportActions,
   className,
 }: {
   stageRef: React.RefObject<HTMLDivElement | null>;
+  exportActions: StageExport;
   className?: string;
 }) => {
   const [view, setView] = useState<CanvasView>("preview");
@@ -78,6 +81,7 @@ export const CanvasPanel = ({
         onZoomChange={setZoom}
         jsonCopied={copied}
         onCopyJson={() => void copy(json)}
+        exportActions={exportActions}
       />
 
       {view === "preview" ? (

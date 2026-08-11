@@ -38,7 +38,7 @@ export const useStageExport = (
   const config = useConfig();
   const { isExporting, exportPng, copyPng, exportJson } = useExport();
 
-  const filename = `post-preview-${CATEGORY_MAP[category].label}`;
+  const filename = `renderly-${CATEGORY_MAP[category].label}`;
 
   const run = useCallback(
     async (action: () => Promise<void>, success: string) => {

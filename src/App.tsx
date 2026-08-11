@@ -52,11 +52,13 @@ export const App = () => {
    * "there is nothing to export", bring the canvas forward and let the export
    * proceed from what the user asked for.
    */
+  const canvasVisible = isDesktop || mode === "preview";
+
   const revealCanvas = useCallback(async () => {
-    if (isDesktop || mode === "preview") return;
+    if (canvasVisible) return;
     setMode("preview");
     await nextPaint();
-  }, [isDesktop, mode]);
+  }, [canvasVisible]);
 
   const exportActions = useStageExport(stageRef, revealCanvas);
 
@@ -65,6 +67,7 @@ export const App = () => {
       <div className="flex h-dvh flex-col overflow-hidden bg-background text-foreground">
         <TopBar
           exportActions={exportActions}
+          showExport={!canvasVisible}
           onOpenCommands={() => setCommandsOpen(true)}
         />
 
@@ -94,13 +97,21 @@ export const App = () => {
                   minSize="30%"
                   className="h-full"
                 >
-                  <CanvasPanel stageRef={stageRef} className="h-full" />
+                  <CanvasPanel
+                    stageRef={stageRef}
+                    exportActions={exportActions}
+                    className="h-full"
+                  />
                 </ResizablePanel>
               </ResizablePanelGroup>
             ) : mode === "edit" ? (
               <ConfigPanel className="h-full" />
             ) : (
-              <CanvasPanel stageRef={stageRef} className="h-full" />
+              <CanvasPanel
+                stageRef={stageRef}
+                exportActions={exportActions}
+                className="h-full"
+              />
             )}
           </main>
         </div>

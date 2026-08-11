@@ -1,0 +1,39 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 64 64"
+  width="64"
+  height="64"
+  role="img"
+  aria-label="Renderly"
+>
+  <defs>
+    <linearGradient id="renderly-tile" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#8f72ff" />
+      <stop offset="1" stop-color="#5526dd" />
+    </linearGradient>
+  </defs>
+
+  <!-- The tile: a rendered surface, in the studio's own brand violet. -->
+  <rect width="64" height="64" rx="15" fill="url(#renderly-tile)" />
+
+  <!--
+    A bubble stands in for every category at once — a post, a comment, a chat
+    turn and an assistant reply all come down to one. Drawn as a single
+    silhouette so the mark still reads at 16px in a browser tab.
+  -->
+  <path
+    d="M20 15h24a8 8 0 0 1 8 8v11a8 8 0 0 1-8 8H29l-7 7Q20 50 20 48V42a8 8 0 0 1-8-8V23a8 8 0 0 1 8-8Z"
+    fill="#fff"
+  />
+
+  <rect x="19" y="23.5" width="26" height="5" rx="2.5" fill="#5526dd" />
+  <rect
+    x="19"
+    y="31.5"
+    width="15"
+    height="5"
+    rx="2.5"
+    fill="#5526dd"
+    opacity="0.45"
+  />
+</svg>

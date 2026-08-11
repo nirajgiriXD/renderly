@@ -10,7 +10,12 @@ import type { ReactNode } from "react";
 import { ConfigActionsContext, ConfigStateContext } from "./contexts";
 import type { ConfigActions } from "./contexts";
 import { useSettings } from "./hooks";
-import { DEFAULT_CONFIG, EMPTY_CONFIG, STORAGE_KEYS } from "@/constants";
+import {
+  DEFAULT_CONFIG,
+  EMPTY_CONFIG,
+  LEGACY_STORAGE_KEYS,
+  STORAGE_KEYS,
+} from "@/constants";
 import { toPersistableConfig } from "@/lib/persistence";
 import { mergeWithDefaults, readJSON, removeKey, writeJSON } from "@/lib/storage";
 import type { AppearanceConfig, CategoryId } from "@/types";
@@ -19,7 +24,9 @@ const PERSIST_DELAY_MS = 400;
 
 const loadInitialConfig = (persist: boolean) => {
   if (!persist) return structuredClone(DEFAULT_CONFIG);
-  const stored = readJSON<unknown>(STORAGE_KEYS.config);
+  const stored =
+    readJSON<unknown>(STORAGE_KEYS.config) ??
+    readJSON<unknown>(LEGACY_STORAGE_KEYS.config);
   if (!stored) return structuredClone(DEFAULT_CONFIG);
   return mergeWithDefaults(structuredClone(DEFAULT_CONFIG), stored);
 };
