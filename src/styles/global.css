@@ -408,6 +408,13 @@
     background-position: -1px -1px;
   }
 
+  /* An image export crops to the device edge, which would slice the frame's
+     shadow open. The stage is flagged for the moment it is being rasterised,
+     and the shadow drops out of the capture. */
+  [data-export-capture] [data-export-frame] {
+    box-shadow: none;
+  }
+
   /* A hairline that fades out at both ends — used to separate toolbar rows
      without drawing a hard full-bleed rule. */
   .rule-fade {

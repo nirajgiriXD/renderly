@@ -65,7 +65,7 @@ const SignalIcons = ({ className }: { className?: string }) => (
 type DeviceFrameProps = {
   device: PreviewDevice;
   theme: PreviewTheme;
-  /** When false the children render bare, without any chrome. */
+  /** When false the preview renders bare — no chrome and no backdrop. */
   enabled?: boolean;
   /** Shown in the browser address bar. */
   url?: string;
@@ -77,8 +77,12 @@ type DeviceFrameProps = {
  * Draws phone or browser chrome around a preview.
  *
  * The frame is what turns "a card on a page" into "how this looks on a
- * phone" — status bar, safe areas and all — and it is captured by the PNG
- * export exactly as shown.
+ * phone" — status bar, safe areas and all.
+ *
+ * Its outer box is also what an image export crops to, which is why every
+ * branch below carries `data-export-frame`: with the chrome switched off the
+ * bare preview takes the marker instead, so the export still stops at the
+ * edge of the thing being previewed rather than at the canvas.
  */
 export const DeviceFrame = ({
   device,
@@ -103,9 +107,15 @@ export const DeviceFrame = ({
     "--frame-fg": dark ? "#e9e9ea" : "#111111",
   } as React.CSSProperties;
 
+  /*
+   * Chrome off means the content and nothing else — no bezel, no backdrop, no
+   * edge of its own. Whatever the preview paints for itself is the whole
+   * picture, and an export of it crops to exactly that.
+   */
   if (!enabled) {
     return (
       <div
+        data-export-frame
         className={cn("w-full", className)}
         style={{ maxWidth: DEVICE_WIDTH[device], ...frameVars }}
       >
@@ -117,6 +127,7 @@ export const DeviceFrame = ({
   if (device === "web") {
     return (
       <div
+        data-export-frame
         className={cn(
           "w-full overflow-hidden rounded-xl border shadow-xl",
           dark ? "border-white/10 bg-[#1f1f1f]" : "border-black/10 bg-[#f1f3f4]",
@@ -150,6 +161,7 @@ export const DeviceFrame = ({
 
   return (
     <div
+      data-export-frame
       className={cn(
         "relative w-full shrink-0 shadow-2xl",
         isIos

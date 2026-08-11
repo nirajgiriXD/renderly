@@ -5,6 +5,8 @@ import {
   Check,
   Copy,
   Frame,
+  // Aliased: the bare name shadows the DOM's `Image` constructor.
+  Image as ImageIcon,
   Minus,
   Monitor,
   Moon,
@@ -20,6 +22,7 @@ import {
 import { ExportMenu } from "./ExportMenu";
 import { Button } from "@/components/ui/button";
 import { Segmented } from "@/components/ui/segmented";
+import type { SegmentedOption } from "@/components/ui/segmented";
 import { Hint } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import {
@@ -48,6 +51,24 @@ const THEMES: { value: PreviewTheme; label: string }[] = [
 ];
 
 const THEME_ICONS = { light: Sun, dark: Moon };
+
+/** How much of a device the preview is wrapped in — the frame, or nothing. */
+type Framing = "framed" | "bare";
+
+const FRAMINGS: SegmentedOption<Framing>[] = [
+  {
+    value: "framed",
+    label: "Device frame",
+    icon: Frame,
+    hint: "Wrap the preview in device chrome",
+  },
+  {
+    value: "bare",
+    label: "Content only",
+    icon: ImageIcon,
+    hint: "Just the content — no frame, no backdrop",
+  },
+];
 
 const Divider = ({ className }: { className?: string }) => (
   <span
@@ -140,6 +161,24 @@ export const CanvasToolbar = ({
               }))}
             />
 
+            {/*
+              Framing sits with the device picker rather than off on its own:
+              "which device" and "how much of it to draw" are one decision,
+              and as a pair of segments the alternative is legible without
+              having to press the control to find out what it does.
+            */}
+            <Segmented
+              iconOnly
+              size="sm"
+              className="shrink-0"
+              label="Device framing"
+              value={appearance.showDeviceFrame ? "framed" : "bare"}
+              onChange={(framing: Framing) =>
+                setAppearance(category, { showDeviceFrame: framing === "framed" })
+              }
+              options={FRAMINGS}
+            />
+
             <Segmented
               iconOnly
               size="sm"
@@ -153,28 +192,6 @@ export const CanvasToolbar = ({
                 hint: `${entry.label} mode inside the preview`,
               }))}
             />
-
-            <Hint
-              label={
-                appearance.showDeviceFrame
-                  ? "Hide the device frame"
-                  : "Show the device frame"
-              }
-            >
-              <Button
-                size="icon-sm"
-                variant={appearance.showDeviceFrame ? "soft" : "ghost"}
-                aria-pressed={appearance.showDeviceFrame}
-                aria-label="Device frame"
-                onClick={() =>
-                  setAppearance(category, {
-                    showDeviceFrame: !appearance.showDeviceFrame,
-                  })
-                }
-              >
-                <Frame />
-              </Button>
-            </Hint>
 
             {zoomable && <Divider />}
 

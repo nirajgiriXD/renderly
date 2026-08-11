@@ -62,8 +62,8 @@ const ExportOption = ({
 /**
  * Download the rendered preview as a PNG, copy it, or save the config as JSON.
  *
- * The PNG is rasterised from the live DOM node, so it captures exactly what is
- * on screen — device frame included.
+ * The PNG is rasterised from the live DOM node, cropped to the device frames
+ * so the canvas behind them is left out.
  */
 export const ExportMenu = ({ actions }: { actions: StageExport }) => {
   const [open, setOpen] = useState(false);
@@ -103,7 +103,7 @@ export const ExportMenu = ({ actions }: { actions: StageExport }) => {
         <ExportOption
           icon={ImageDown}
           title="Download PNG"
-          description="Everything currently on the stage, at 2× resolution."
+          description="Cropped to the device, at 2× resolution."
           onSelect={() => select(actions.downloadPng)}
         />
 

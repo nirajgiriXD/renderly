@@ -35,10 +35,11 @@ const DEVICE_LABEL = {
 /**
  * The right half of the workspace: the rendered stage, or the JSON behind it.
  *
- * The stage is what gets rasterised on export, so it — and only it — carries
- * the ref handed down from the shell. Scaling happens on a wrapper *around*
- * it with CSS `zoom`, which leaves the stage's own layout box untouched and
- * keeps an export 1:1 whatever the canvas is currently showing.
+ * The stage is what the export reads, so it — and only it — carries the ref
+ * handed down from the shell; the image is then cropped to the device frames
+ * inside it, leaving the dotted backdrop out. Scaling happens on a wrapper
+ * *around* it with CSS `zoom`, which leaves the stage's own layout box
+ * untouched and keeps an export 1:1 whatever the canvas is currently showing.
  */
 export const CanvasPanel = ({
   stageRef,

@@ -119,9 +119,9 @@ export const PreviewStage = ({
         const meta = platformMeta(platform);
 
         return (
-          <figure
+          <div
             key={platform}
-            className="flex w-full max-w-md flex-col items-center gap-3"
+            className="flex w-full max-w-md flex-col items-center"
           >
             <ErrorBoundary label={`The ${meta.label} preview`} resetKey={platform}>
               <DeviceFrame
@@ -130,31 +130,27 @@ export const PreviewStage = ({
                 enabled={appearance.showDeviceFrame}
                 url={`${platform === "twitter" ? "x" : platform}.com`}
               >
+                {/*
+                  The gutter is the feed a card would sit on — part of the
+                  device simulation, not of the post. With the frame off the
+                  card is the whole picture, so the gutter goes with it. A
+                  full-screen preview keeps its surface either way: that one
+                  is the app's own background, not a backdrop behind it.
+                */}
                 <div
                   className={cn(
                     "flex justify-center",
                     FILLS_SCREEN[category]
                       ? "bg-[var(--frame-surface)]"
-                      : "bg-[var(--frame-gutter)] p-3"
+                      : appearance.showDeviceFrame &&
+                        "bg-[var(--frame-gutter)] p-3"
                   )}
                 >
                   {renderPreview(category, platform, config)}
                 </div>
               </DeviceFrame>
             </ErrorBoundary>
-
-            <figcaption
-              data-export-ignore
-              className="flex items-center gap-1.5 rounded-full border border-border bg-surface/80 px-2.5 py-1 text-[0.6875rem] font-medium text-muted-foreground shadow-xs backdrop-blur-sm"
-            >
-              <img
-                src={meta.logo}
-                alt=""
-                className="size-3 dark:brightness-0 dark:invert"
-              />
-              {meta.label}
-            </figcaption>
-          </figure>
+          </div>
         );
       })}
     </div>

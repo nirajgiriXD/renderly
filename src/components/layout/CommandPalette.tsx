@@ -155,11 +155,11 @@ const CommandList = ({
       {
         id: "frame",
         label: appearance.showDeviceFrame
-          ? "Hide the device frame"
+          ? "Show the content on its own"
           : "Show the device frame",
         group: "Canvas",
         icon: Frame,
-        keywords: "bezel chrome browser window",
+        keywords: "bezel chrome browser window screenshot bare",
         run: () =>
           setAppearance(category, {
             showDeviceFrame: !appearance.showDeviceFrame,
