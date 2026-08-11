@@ -46,7 +46,12 @@ export const TwitterPost = ({ data }: PostPreviewProps) => {
 
   return (
     <PreviewSurface skin={SKIN} theme={appearance.theme} className="w-full">
-      <PreviewCard className="transition-colors hover:bg-[var(--pv-subtle)]/50">
+      {/*
+        The hover tint replaces the card's own background, so it has to be
+        opaque — an alpha value here would let the canvas show through the
+        whole post. `color-mix` keeps the half-strength look without it.
+      */}
+      <PreviewCard className="transition-colors hover:bg-[color-mix(in_srgb,var(--pv-subtle)_50%,var(--pv-bg))]">
         <article className="flex gap-3 px-3 py-3 text-[15px] leading-5">
           <PreviewAvatar
             src={author.avatar}
