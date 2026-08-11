@@ -120,14 +120,17 @@ export const formatDayLabel = (
   });
 };
 
-/** Absolute date used by LinkedIn/Facebook hover cards and Reddit tooltips. */
-export const formatAbsoluteDate = (date: Date | string | null | undefined) => {
+/**
+ * Calendar date without a time.
+ *
+ * Used by the date picker's trigger, which sits beside its own time input —
+ * printing the time in both places says the same thing twice and costs the
+ * button the width it needs to show the date at all.
+ */
+export const formatCalendarDate = (date: Date | string | null | undefined) => {
   const parsed = toDate(date);
   if (!parsed) return "";
-  return parsed.toLocaleString("en-US", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
+  return parsed.toLocaleDateString("en-US", { dateStyle: "medium" });
 };
 
 /** `0:00` style media duration. */

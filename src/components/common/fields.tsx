@@ -9,6 +9,8 @@ import type { ReactNode } from "react";
  */
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Segmented } from "@/components/ui/segmented";
+import type { SegmentedOption } from "@/components/ui/segmented";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -22,10 +24,13 @@ import { cn } from "@/lib/utils";
 import { toCount } from "@/lib/format";
 
 /**
- * Label + optional hint + control.
+ * Label + control + optional hint.
  *
- * Every editor input goes through this so spacing, label association and hint
- * typography stay identical across four categories of settings.
+ * Every input in the inspector goes through this so spacing, label
+ * association and hint typography stay identical across four categories of
+ * settings. The hint sits *under* the control on purpose: it explains the
+ * consequence of a value, which is only interesting once you are looking at
+ * the value.
  */
 export const Field = ({
   label,
@@ -40,12 +45,16 @@ export const Field = ({
   className?: string;
   children: ReactNode;
 }) => (
-  <div className={cn("space-y-2", className)}>
+  <div className={cn("space-y-1.5", className)}>
     <Label htmlFor={htmlFor} className="w-fit">
       {label}
     </Label>
     {children}
-    {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+    {hint && (
+      <p className="text-pretty text-xs leading-relaxed text-muted-foreground">
+        {hint}
+      </p>
+    )}
   </div>
 );
 
@@ -73,7 +82,10 @@ export const TextField = ({
     <Field label={label} hint={hint} htmlFor={id} className={className}>
       <div className="relative">
         {prefix && (
-          <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm text-muted-foreground">
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-sm font-medium text-faint"
+          >
             {prefix}
           </span>
         )}
@@ -82,7 +94,11 @@ export const TextField = ({
           value={value}
           placeholder={placeholder}
           onChange={(event) => onChange(event.target.value)}
-          className={cn(prefix && "pl-7")}
+          style={
+            prefix
+              ? { paddingLeft: `calc(0.95rem + ${prefix.length}ch)` }
+              : undefined
+          }
         />
       </div>
     </Field>
@@ -156,6 +172,7 @@ export const NumberField = ({
         value={Number.isFinite(value) ? value : 0}
         placeholder={placeholder}
         onChange={(event) => onChange(toCount(event.target.value))}
+        className="tabular-nums"
       />
     </Field>
   );
@@ -200,6 +217,32 @@ export const SelectField = <T extends string>({
   );
 };
 
+/**
+ * A choice with few enough options to show them all at once.
+ *
+ * Preferred over a dropdown whenever the options fit: seeing the alternatives
+ * without opening anything is worth the extra width.
+ */
+export const SegmentedField = <T extends string>({
+  label,
+  hint,
+  value,
+  options,
+  onChange,
+  className,
+}: {
+  label: string;
+  hint?: ReactNode;
+  value: T;
+  options: readonly SegmentedOption<T>[];
+  onChange: (value: T) => void;
+  className?: string;
+}) => (
+  <Field label={label} hint={hint} className={className}>
+    <Segmented label={label} value={value} options={options} onChange={onChange} />
+  </Field>
+);
+
 /** Inline toggle with its label and description on the left. */
 export const SwitchField = ({
   label,
@@ -219,13 +262,18 @@ export const SwitchField = ({
   return (
     <div
       className={cn(
-        "flex items-center justify-between gap-4 rounded-lg border p-3",
+        "flex items-center justify-between gap-4 rounded-lg border border-border bg-surface px-3.5 py-3",
+        "transition-colors duration-150 hover:border-border-strong",
         className
       )}
     >
-      <div className="space-y-0.5">
+      <div className="min-w-0 space-y-0.5">
         <Label htmlFor={id}>{label}</Label>
-        {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+        {hint && (
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            {hint}
+          </p>
+        )}
       </div>
       <Switch id={id} checked={checked} onCheckedChange={onChange} />
     </div>

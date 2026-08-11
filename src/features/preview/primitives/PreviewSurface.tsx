@@ -36,7 +36,7 @@ export const PreviewSurface = ({
   <div
     data-preview-theme={theme}
     className={cn(
-      "text-[var(--pv-fg)] [font-synthesis:none] antialiased",
+      "font-platform text-[var(--pv-fg)] [font-synthesis:none] antialiased",
       className
     )}
     style={{

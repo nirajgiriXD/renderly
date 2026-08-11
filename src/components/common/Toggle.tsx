@@ -7,11 +7,15 @@ import type { LucideIcon } from "lucide-react";
  * Internal dependencies.
  */
 import { Button } from "@/components/ui/button";
+import { Hint } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 /**
  * Icon-only on/off button used inside dense list rows, where a full switch
  * with its own label would not fit.
+ *
+ * The pressed state fills the glyph as well as tinting the button — colour
+ * alone is not a state anyone should have to read.
  */
 export const Toggle = ({
   pressed,
@@ -26,16 +30,17 @@ export const Toggle = ({
   icon: LucideIcon;
   className?: string;
 }) => (
-  <Button
-    type="button"
-    size="icon"
-    variant={pressed ? "secondary" : "ghost"}
-    aria-pressed={pressed}
-    aria-label={label}
-    title={label}
-    onClick={() => onPressedChange(!pressed)}
-    className={cn(pressed && "text-foreground", className)}
-  >
-    <Icon className={cn(pressed && "fill-current")} />
-  </Button>
+  <Hint label={label}>
+    <Button
+      type="button"
+      size="icon-sm"
+      variant={pressed ? "soft" : "ghost"}
+      aria-pressed={pressed}
+      aria-label={label}
+      onClick={() => onPressedChange(!pressed)}
+      className={className}
+    >
+      <Icon className={cn(pressed && "fill-current")} />
+    </Button>
+  </Hint>
 );

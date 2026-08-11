@@ -15,6 +15,7 @@ import {
   MESSAGE_PREVIEWS,
   POST_PREVIEWS,
 } from "./registry";
+import { EmptyState } from "@/components/common/EmptyState";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { PLATFORMS_BY_CATEGORY, platformMeta } from "@/constants";
 import { cn } from "@/lib/utils";
@@ -94,19 +95,15 @@ export const PreviewStage = ({
 
   if (selected.length === 0) {
     return (
-      <div
-        className={cn(
-          "flex min-h-72 flex-col items-center justify-center gap-3 rounded-xl border border-dashed p-10 text-center",
-          className
-        )}
-      >
-        <LayoutGrid className="size-6 text-muted-foreground" aria-hidden />
-        <div>
-          <p className="text-sm font-medium">No platform selected</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Pick one or more platforms to see how this content will look.
-          </p>
-        </div>
+      <div className={cn("flex min-h-72 items-center justify-center", className)}>
+        <EmptyState
+          icon={LayoutGrid}
+          title="Nothing to preview yet"
+          description={`Choose a platform in the ${
+            category === "ai-chats" ? "Assistants" : "Platforms"
+          } section to see how this content will look.`}
+          className="w-full max-w-sm bg-surface/70 backdrop-blur-sm"
+        />
       </div>
     );
   }
@@ -148,12 +145,12 @@ export const PreviewStage = ({
 
             <figcaption
               data-export-ignore
-              className="flex items-center gap-2 text-xs font-medium text-muted-foreground"
+              className="flex items-center gap-1.5 rounded-full border border-border bg-surface/80 px-2.5 py-1 text-[0.6875rem] font-medium text-muted-foreground shadow-xs backdrop-blur-sm"
             >
               <img
                 src={meta.logo}
                 alt=""
-                className="size-3.5 dark:brightness-0 dark:invert"
+                className="size-3 dark:brightness-0 dark:invert"
               />
               {meta.label}
             </figcaption>

@@ -31,6 +31,8 @@ export type ConfigActions = {
   ) => void;
   /** Turns a platform on or off for a category, honouring its select mode. */
   togglePlatform: (category: CategoryId, platform: string) => void;
+  /** Replaces a category's platform selection outright. */
+  setPlatforms: (category: CategoryId, platforms: readonly string[]) => void;
   /** Switches a category between single- and multi-platform preview. */
   setMultiSelect: (category: CategoryId, enabled: boolean) => void;
   /** Patches a category's theme / device / frame settings. */

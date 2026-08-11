@@ -1,23 +1,34 @@
 /**
  * External dependencies.
  */
-import { useId, useState } from "react";
-import { CalendarIcon, X } from "lucide-react";
+import { Suspense, lazy, useId, useState } from "react";
+import { CalendarIcon, Loader2, X } from "lucide-react";
 
 /**
  * Internal dependencies.
  */
 import { Field } from "./fields";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Hint } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { formatAbsoluteDate } from "@/lib/format";
+import { formatCalendarDate } from "@/lib/format";
+
+/*
+ * The month grid is a sizeable dependency that only matters once someone
+ * opens the picker, and the popover unmounts it again on close — so it is
+ * fetched on demand rather than shipped in the initial bundle.
+ */
+const Calendar = lazy(() =>
+  import("@/components/ui/calendar").then((module) => ({
+    default: module.Calendar,
+  }))
+);
 
 const toTimeValue = (date: Date) =>
   `${date.getHours().toString().padStart(2, "0")}:${date
@@ -55,7 +66,7 @@ export const DateTimeField = ({
 
   return (
     <Field label={label} hint={hint} htmlFor={id} className={className}>
-      <div className="flex gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -63,40 +74,51 @@ export const DateTimeField = ({
               type="button"
               variant="outline"
               className={cn(
-                "min-w-0 flex-1 justify-start font-normal",
+                "min-w-36 flex-1 justify-start font-normal",
                 !selected && "text-muted-foreground"
               )}
             >
-              <CalendarIcon />
+              <CalendarIcon className="text-faint" />
               <span className="truncate">
-                {selected ? formatAbsoluteDate(selected) : "Now"}
+                {selected ? formatCalendarDate(selected) : "Now"}
               </span>
             </Button>
           </PopoverTrigger>
           <PopoverContent align="start" className="w-auto overflow-hidden p-0">
-            <Calendar
-              mode="single"
-              autoFocus
-              captionLayout="dropdown"
-              selected={selected ?? undefined}
-              onSelect={(date) => {
-                if (!date) return;
-                const next = new Date(date);
-                // Keep the time of day the user already chose.
-                if (selected) {
-                  next.setHours(selected.getHours(), selected.getMinutes());
-                }
-                commit(next);
-                setOpen(false);
-              }}
-            />
+            <Suspense
+              fallback={
+                <div className="grid h-64 w-64 place-items-center">
+                  <Loader2
+                    className="size-4 animate-spin text-muted-foreground"
+                    aria-hidden
+                  />
+                </div>
+              }
+            >
+              <Calendar
+                mode="single"
+                autoFocus
+                captionLayout="dropdown"
+                selected={selected ?? undefined}
+                onSelect={(date) => {
+                  if (!date) return;
+                  const next = new Date(date);
+                  // Keep the time of day the user already chose.
+                  if (selected) {
+                    next.setHours(selected.getHours(), selected.getMinutes());
+                  }
+                  commit(next);
+                  setOpen(false);
+                }}
+              />
+            </Suspense>
           </PopoverContent>
         </Popover>
 
         <Input
           type="time"
           aria-label="Time"
-          className="w-30"
+          className="w-32 shrink-0"
           value={selected ? toTimeValue(selected) : ""}
           onChange={(event) => {
             const [hours, minutes] = event.target.value.split(":").map(Number);
@@ -108,15 +130,17 @@ export const DateTimeField = ({
         />
 
         {selected && (
-          <Button
-            type="button"
-            size="icon"
-            variant="ghost"
-            aria-label="Reset to now"
-            onClick={() => onChange("")}
-          >
-            <X />
-          </Button>
+          <Hint label="Reset to now">
+            <Button
+              type="button"
+              size="icon-sm"
+              variant="ghost"
+              aria-label="Reset to now"
+              onClick={() => onChange("")}
+            >
+              <X />
+            </Button>
+          </Hint>
         )}
       </div>
     </Field>

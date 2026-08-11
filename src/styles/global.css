@@ -2,96 +2,304 @@
 @import "tw-animate-css";
 
 /*
- * The editor's own theme is toggled by adding `.dark` to <html>. Previews are
- * themed independently through the `--pv-*` custom properties published by
- * `PreviewSurface`, so switching the editor to dark never changes what a
- * preview claims the platform looks like.
+ * The studio's typefaces, served from the bundle rather than a font CDN.
+ *
+ * Post Preview makes a promise — nothing leaves the tab — and a stylesheet
+ * fetched from a third party would quietly break it by handing that party the
+ * visitor's IP on every load. Self-hosting also means the rasteriser can read
+ * these rules when it embeds fonts, which a cross-origin sheet forbids.
+ *
+ * Only the Latin subsets are declared: these faces dress the studio's chrome,
+ * which is English, while previews render in the host's own fonts.
+ */
+@font-face {
+  font-family: "Inter Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("@fontsource-variable/inter/files/inter-latin-wght-normal.woff2")
+    format("woff2-variations");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url("@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2")
+    format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * Post Preview — design system
+ * ---------------------------------------------------------------------------
+ *
+ * Two colour worlds live in this app and they must never bleed into each
+ * other:
+ *
+ *   1. The *studio* — the chrome you are working in. Themed by `.dark` on
+ *      <html> and driven by the tokens below.
+ *   2. The *previews* — each one claims to be Instagram, Slack, ChatGPT…
+ *      They are themed independently through the `--pv-*` custom properties
+ *      published by `PreviewSurface`, and they deliberately keep the platform
+ *      font stack (`--font-platform`) rather than the studio's.
+ *
+ * So: switching the studio to dark never changes what a preview looks like.
  */
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* ---------------------------------------------------------------- radii */
+  --radius-xs: calc(var(--radius) - 6px);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-3xl: calc(var(--radius) + 14px);
 
+  /* --------------------------------------------------------------- colour */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  /* Layered surfaces. `surface` is a panel on the canvas, `elevated` is a
+     thing floating above it, `sunken` is a well carved into it. */
+  --color-surface: var(--surface);
+  --color-elevated: var(--elevated);
+  --color-sunken: var(--sunken);
+
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
+
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  /* Tinted brand washes for selected states that must not shout. */
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-line: var(--brand-line);
+  --color-brand-text: var(--brand-text);
+
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  --color-faint: var(--faint);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-soft: var(--destructive-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
   --color-input: var(--input);
   --color-ring: var(--ring);
 
+  /* ------------------------------------------------------------ typography */
   --font-sans:
-    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
-    Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji";
+  /*
+   * `--font-mono` and `--font-platform` are the stacks the *previews* render
+   * in, and both are deliberately system-only.
+   *
+   * A preview should look like the platform it is imitating, which means the
+   * host's native fonts — and it means the rasteriser never has to embed a
+   * web font to export a preview faithfully. The studio's own faces
+   * (`--font-sans`, `--font-code`) are a separate decision about this tool.
+   */
   --font-mono:
     ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
     monospace;
+  --font-platform:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-code:
+    "JetBrains Mono", ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+
+  /* --------------------------------------------------------------- shadow */
+  --shadow-xs: 0 1px 2px -1px var(--shadow-tint-weak);
+  --shadow-sm:
+    0 1px 2px -1px var(--shadow-tint-weak), 0 2px 6px -2px var(--shadow-tint);
+  --shadow-md:
+    0 2px 4px -2px var(--shadow-tint-weak), 0 6px 16px -6px var(--shadow-tint);
+  --shadow-lg:
+    0 4px 8px -4px var(--shadow-tint-weak), 0 16px 32px -12px var(--shadow-tint);
+  --shadow-xl:
+    0 8px 16px -8px var(--shadow-tint), 0 32px 64px -24px var(--shadow-tint);
+  /* Reads as "lifted off the canvas" rather than "drop shadow". */
+  --shadow-panel: 0 0 0 1px var(--border), 0 1px 3px -1px var(--shadow-tint-weak);
+
+  /* --------------------------------------------------------------- motion */
+  --ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  --animate-rise: rise 0.32s var(--ease-out-expo) both;
+  --animate-fade-in: fade-in 0.2s var(--ease-out-quad) both;
+  --animate-shimmer: shimmer 1.6s linear infinite;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
 }
 
-:root {
-  --radius: 0.7rem;
+/* -------------------------------------------------------------------------- */
+/*                                 Light theme                                 */
+/* -------------------------------------------------------------------------- */
 
-  /* A very slightly warm neutral ramp reads calmer behind the colourful
-     platform previews than a pure grey one. */
-  --background: oklch(0.995 0.001 106);
-  --foreground: oklch(0.19 0.005 285);
+:root {
+  --radius: 0.625rem;
+
+  /*
+   * A faintly cool neutral ramp. The previews bring every brand colour under
+   * the sun, so the studio around them stays close to grey and lets a single
+   * iris accent do all the signalling.
+   */
+  --background: oklch(0.976 0.003 274);
+  --foreground: oklch(0.205 0.017 273);
+
+  --surface: oklch(1 0 0);
+  --elevated: oklch(1 0 0);
+  --sunken: oklch(0.958 0.004 274);
+
   --card: oklch(1 0 0);
   --card-foreground: var(--foreground);
   --popover: oklch(1 0 0);
   --popover-foreground: var(--foreground);
-  --primary: oklch(0.27 0.02 275);
-  --primary-foreground: oklch(0.985 0.002 106);
-  --secondary: oklch(0.965 0.003 106);
-  --secondary-foreground: var(--primary);
-  --muted: oklch(0.965 0.003 106);
-  --muted-foreground: oklch(0.53 0.01 285);
-  --accent: oklch(0.955 0.006 265);
-  --accent-foreground: var(--primary);
-  --destructive: oklch(0.58 0.21 27);
+
+  --primary: oklch(0.523 0.207 288);
+  --primary-foreground: oklch(0.995 0.004 288);
+  --primary-hover: oklch(0.468 0.196 288);
+  --brand-soft: oklch(0.958 0.021 288);
+  --brand-line: oklch(0.86 0.06 288);
+  --brand-text: oklch(0.43 0.19 288);
+
+  --secondary: oklch(0.955 0.005 274);
+  --secondary-foreground: oklch(0.28 0.02 273);
+  --muted: oklch(0.958 0.004 274);
+  --muted-foreground: oklch(0.508 0.017 268);
+  --faint: oklch(0.635 0.014 268);
+  --accent: oklch(0.955 0.006 274);
+  --accent-foreground: oklch(0.24 0.02 273);
+
+  --destructive: oklch(0.567 0.213 25);
   --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.915 0.004 106);
-  --input: oklch(0.9 0.004 106);
-  --ring: oklch(0.6 0.09 265);
+  --destructive-soft: oklch(0.962 0.019 25);
+  --success: oklch(0.556 0.135 158);
+  --success-soft: oklch(0.955 0.033 158);
+  --warning: oklch(0.63 0.145 62);
+  --warning-soft: oklch(0.96 0.04 75);
+
+  --border: oklch(0.912 0.005 274);
+  --border-strong: oklch(0.855 0.008 274);
+  --input: oklch(0.895 0.006 274);
+  --ring: oklch(0.553 0.19 288);
+
+  --shadow-tint: oklch(0.28 0.03 274 / 12%);
+  --shadow-tint-weak: oklch(0.28 0.03 274 / 8%);
+
+  /* The dotted canvas the previews sit on. */
+  --canvas-dot: oklch(0.845 0.008 274);
 }
 
+/* -------------------------------------------------------------------------- */
+/*                                  Dark theme                                 */
+/* -------------------------------------------------------------------------- */
+
 .dark {
-  --background: oklch(0.17 0.006 285);
-  --foreground: oklch(0.96 0.003 106);
-  --card: oklch(0.21 0.007 285);
+  --background: oklch(0.164 0.011 275);
+  --foreground: oklch(0.965 0.004 268);
+
+  --surface: oklch(0.196 0.013 275);
+  --elevated: oklch(0.228 0.014 275);
+  --sunken: oklch(0.142 0.011 275);
+
+  --card: oklch(0.208 0.013 275);
   --card-foreground: var(--foreground);
-  --popover: oklch(0.22 0.008 285);
+  --popover: oklch(0.232 0.014 275);
   --popover-foreground: var(--foreground);
-  --primary: oklch(0.93 0.004 106);
-  --primary-foreground: oklch(0.2 0.007 285);
-  --secondary: oklch(0.27 0.008 285);
-  --secondary-foreground: var(--foreground);
-  --muted: oklch(0.25 0.008 285);
-  --muted-foreground: oklch(0.7 0.012 285);
-  --accent: oklch(0.29 0.012 275);
-  --accent-foreground: var(--foreground);
-  --destructive: oklch(0.66 0.19 25);
-  --destructive-foreground: oklch(0.15 0 0);
-  --border: oklch(1 0 0 / 11%);
-  --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.62 0.09 265);
+
+  --primary: oklch(0.562 0.212 288);
+  --primary-foreground: oklch(0.99 0.004 288);
+  --primary-hover: oklch(0.612 0.207 288);
+  --brand-soft: oklch(0.288 0.062 288);
+  --brand-line: oklch(0.42 0.12 288);
+  --brand-text: oklch(0.83 0.11 288);
+
+  --secondary: oklch(0.262 0.014 275);
+  --secondary-foreground: oklch(0.94 0.006 268);
+  --muted: oklch(0.252 0.013 275);
+  --muted-foreground: oklch(0.688 0.016 270);
+  --faint: oklch(0.565 0.015 270);
+  --accent: oklch(0.278 0.016 275);
+  --accent-foreground: oklch(0.96 0.005 268);
+
+  --destructive: oklch(0.648 0.198 25);
+  --destructive-foreground: oklch(0.145 0.02 25);
+  --destructive-soft: oklch(0.3 0.075 25);
+  --success: oklch(0.702 0.145 158);
+  --success-soft: oklch(0.29 0.055 158);
+  --warning: oklch(0.775 0.145 75);
+  --warning-soft: oklch(0.31 0.06 75);
+
+  --border: oklch(1 0 0 / 9%);
+  --border-strong: oklch(1 0 0 / 17%);
+  --input: oklch(1 0 0 / 13%);
+  --ring: oklch(0.638 0.175 288);
+
+  --shadow-tint: oklch(0 0 0 / 46%);
+  --shadow-tint-weak: oklch(0 0 0 / 30%);
+
+  --canvas-dot: oklch(1 0 0 / 14%);
 }
+
+/* -------------------------------------------------------------------------- */
+/*                                    Base                                     */
+/* -------------------------------------------------------------------------- */
 
 @layer base {
   * {
@@ -108,48 +316,110 @@
     /* The workspace manages its own scrolling regions. */
     overflow: hidden;
     overscroll-behavior: none;
+    /* Inter's defaults are a little loose for dense UI, and its tabular
+       figures keep counters from jittering as they are typed into. */
+    font-feature-settings:
+      "cv02" 1,
+      "cv03" 1,
+      "cv04" 1,
+      "ss01" 1;
+    letter-spacing: -0.006em;
   }
 
-  /* One consistent focus ring across the editor. Previews opt out: their
-     controls are inert decoration, not real affordances. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-semibold;
+    letter-spacing: -0.018em;
+    text-wrap: balance;
+  }
+
+  /* Numbers that live in counters, badges and timestamps should not reflow
+     as their digits change. */
+  input[type="number"],
+  [data-numeric] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /*
+   * One consistent focus ring across the studio. Previews opt out: their
+   * controls are inert decoration, not real affordances.
+   */
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-ring;
+    @apply outline-ring outline-2 outline-offset-2;
   }
 
   ::selection {
-    @apply bg-primary/15;
+    background-color: var(--brand-soft);
+    color: var(--brand-text);
+  }
+
+  /* Firefox and Chrome both honour this for native controls. */
+  ::placeholder {
+    @apply text-muted-foreground/70;
   }
 }
 
+/* -------------------------------------------------------------------------- */
+/*                                  Utilities                                  */
+/* -------------------------------------------------------------------------- */
+
 @layer utilities {
-  /* Slim scrollbars inside the editor and preview panes, so a scrolling
-     column does not put a chunky OS bar through the middle of the layout. */
-  .overflow-y-auto,
-  .overflow-x-auto,
-  .overflow-auto {
+  /*
+   * Slim scrollbars inside the studio's scrolling regions, so a column that
+   * happens to overflow does not put a chunky OS bar through the middle of
+   * the layout. Deliberately scoped to the studio: previews set their own
+   * `color-scheme`, and a preview should show the scrollbar the real app
+   * would.
+   */
+  .scroll-region {
     scrollbar-width: thin;
-    scrollbar-color: var(--color-border) transparent;
+    scrollbar-color: var(--border-strong) transparent;
   }
 
-  .overflow-y-auto::-webkit-scrollbar,
-  .overflow-x-auto::-webkit-scrollbar,
-  .overflow-auto::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+  .scroll-region::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
   }
 
-  .overflow-y-auto::-webkit-scrollbar-thumb,
-  .overflow-x-auto::-webkit-scrollbar-thumb,
-  .overflow-auto::-webkit-scrollbar-thumb {
-    background-color: var(--color-border);
+  .scroll-region::-webkit-scrollbar-thumb {
+    background-color: var(--border-strong);
+    border: 3px solid transparent;
+    background-clip: content-box;
     border-radius: 9999px;
   }
 
-  .overflow-y-auto::-webkit-scrollbar-track,
-  .overflow-x-auto::-webkit-scrollbar-track,
-  .overflow-auto::-webkit-scrollbar-track {
+  .scroll-region::-webkit-scrollbar-thumb:hover {
+    background-color: var(--faint);
+  }
+
+  .scroll-region::-webkit-scrollbar-track {
     background: transparent;
   }
+
+  /* The dot grid the preview stage sits on. */
+  .canvas-grid {
+    background-image: radial-gradient(
+      var(--canvas-dot) 1px,
+      transparent 1px
+    );
+    background-size: 20px 20px;
+    background-position: -1px -1px;
+  }
+
+  /* A hairline that fades out at both ends — used to separate toolbar rows
+     without drawing a hard full-bleed rule. */
+  .rule-fade {
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--border) 12%,
+      var(--border) 88%,
+      transparent
+    );
+  }
+
 }
 
 @media (prefers-reduced-motion: reduce) {

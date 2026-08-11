@@ -1,19 +1,27 @@
 /**
  * External dependencies.
  */
-import { ArrowLeftRight, Bot, Copy, Trash2, User } from "lucide-react";
+import { ArrowLeftRight, Bot, Copy, MessagesSquare, Trash2, User } from "lucide-react";
 
 /**
  * Internal dependencies.
  */
+import { Disclosure, DisclosureDot } from "@/components/common/Disclosure";
+import { EmptyState } from "@/components/common/EmptyState";
 import {
   SwitchField,
   TextAreaField,
   TextField,
 } from "@/components/common/fields";
-import { SortableList } from "@/components/common/SortableList";
+import { GroupHeader, Panel } from "@/components/common/Panel";
+import {
+  RowBody,
+  RowHeader,
+  SortableList,
+} from "@/components/common/SortableList";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Hint } from "@/components/ui/tooltip";
 import { useListEditor } from "@/hooks";
 import { createId } from "@/lib/id";
 import { useSection } from "@/store";
@@ -37,133 +45,183 @@ export const AiConversationSection = () => {
   );
 
   return (
-    <div className="space-y-6">
-      <TextField
-        label="Conversation title"
-        hint="Shown in the assistant's header where the product supports it."
-        value={conversation.title}
-        placeholder="Debouncing a search input"
-        onChange={(title) => setConversation({ title })}
-      />
+    <div className="space-y-5">
+      <Panel title="Transcript settings">
+        <TextField
+          label="Conversation title"
+          hint="Shown in the assistant's header where the product supports it."
+          value={conversation.title}
+          placeholder="Debouncing a search input"
+          onChange={(title) => setConversation({ title })}
+        />
 
-      <SwitchField
-        label="Streaming"
-        hint="Adds the typing caret to the last assistant reply."
-        checked={conversation.streaming}
-        onChange={(streaming) => setConversation({ streaming })}
-      />
+        <SwitchField
+          label="Streaming"
+          hint="Adds the typing caret to the last assistant reply."
+          checked={conversation.streaming}
+          onChange={(streaming) => setConversation({ streaming })}
+        />
+      </Panel>
 
       <section className="space-y-3">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <h3 className="text-sm font-semibold">Turns</h3>
-            <Badge variant="secondary">{turns.items.length}</Badge>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => turns.add(newTurn("user"))}
-            >
-              <User />
-              Prompt
-            </Button>
-            <Button size="sm" onClick={() => turns.add(newTurn("assistant"))}>
-              <Bot />
-              Reply
-            </Button>
-          </div>
-        </div>
+        <GroupHeader
+          title="Turns"
+          count={turns.items.length}
+          description="Prompts and replies, in the order they are rendered."
+          actions={
+            <>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => turns.add(newTurn("user"))}
+              >
+                <User />
+                Prompt
+              </Button>
+              <Button size="sm" onClick={() => turns.add(newTurn("assistant"))}>
+                <Bot />
+                Reply
+              </Button>
+            </>
+          }
+        />
 
         {turns.items.length === 0 ? (
-          <p className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
-            No turns yet. Add a prompt and a reply to build the transcript.
-          </p>
+          <EmptyState
+            size="sm"
+            icon={MessagesSquare}
+            title="No turns yet"
+            description="Add a prompt and a reply to build the transcript."
+            action={
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => turns.add(newTurn("user"))}
+                >
+                  <User />
+                  Prompt
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => turns.add(newTurn("assistant"))}
+                >
+                  <Bot />
+                  Reply
+                </Button>
+              </div>
+            }
+          />
         ) : (
           <SortableList items={turns.items} onReorder={turns.move}>
-            {(turn) => (
-              <div className="space-y-4 p-4 pl-1">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <Badge
-                    variant={turn.role === "user" ? "default" : "secondary"}
-                    className="gap-1"
-                  >
-                    {turn.role === "user" ? (
-                      <User className="size-3" />
-                    ) : (
-                      <Bot className="size-3" />
-                    )}
-                    {turn.role === "user" ? "Prompt" : "Reply"}
-                  </Badge>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() =>
-                        turns.update(turn.id, {
-                          role: turn.role === "user" ? "assistant" : "user",
-                        })
-                      }
-                    >
-                      <ArrowLeftRight />
-                      Switch role
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      aria-label="Duplicate turn"
-                      onClick={() =>
-                        turns.duplicate(turn.id, (item) => ({
-                          ...item,
-                          id: createId("turn"),
-                        }))
-                      }
-                    >
-                      <Copy />
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      aria-label="Delete turn"
-                      onClick={() => turns.remove(turn.id)}
-                    >
-                      <Trash2 className="text-destructive" />
-                    </Button>
-                  </div>
-                </div>
+            {(turn) => {
+              const isPrompt = turn.role === "user";
 
-                <TextAreaField
-                  label="Message"
-                  className="[&>label]:sr-only"
-                  hint={
-                    turn.role === "assistant"
-                      ? "Markdown is rendered: headings, lists, **bold**, `code` and ``` fenced blocks."
-                      : undefined
-                  }
-                  rows={turn.role === "assistant" ? 6 : 3}
-                  value={turn.text}
-                  placeholder={
-                    turn.role === "user"
-                      ? "Ask the assistant something…"
-                      : "Write the assistant's reply…"
-                  }
-                  onChange={(text) => turns.update(turn.id, { text })}
-                />
-
-                {turn.role === "assistant" && (
-                  <TextAreaField
-                    label="Reasoning"
-                    hint="Optional. Renders as the collapsed “thought for a few seconds” block."
-                    rows={2}
-                    value={turn.reasoning}
-                    placeholder="What the model considered before answering…"
-                    onChange={(reasoning) =>
-                      turns.update(turn.id, { reasoning })
+              return (
+                <>
+                  <RowHeader
+                    lead={
+                      <Badge variant={isPrompt ? "soft" : "secondary"}>
+                        {isPrompt ? (
+                          <User className="size-3" />
+                        ) : (
+                          <Bot className="size-3" />
+                        )}
+                        {isPrompt ? "Prompt" : "Reply"}
+                      </Badge>
+                    }
+                    actions={
+                      <>
+                        <Hint
+                          label={isPrompt ? "Make a reply" : "Make a prompt"}
+                        >
+                          <Button
+                            size="icon-sm"
+                            variant="ghost"
+                            aria-label="Switch role"
+                            onClick={() =>
+                              turns.update(turn.id, {
+                                role: isPrompt ? "assistant" : "user",
+                              })
+                            }
+                          >
+                            <ArrowLeftRight />
+                          </Button>
+                        </Hint>
+                        <Hint label="Duplicate turn">
+                          <Button
+                            size="icon-sm"
+                            variant="ghost"
+                            aria-label="Duplicate turn"
+                            onClick={() =>
+                              turns.duplicate(turn.id, (item) => ({
+                                ...item,
+                                id: createId("turn"),
+                              }))
+                            }
+                          >
+                            <Copy />
+                          </Button>
+                        </Hint>
+                        <Hint label="Delete turn">
+                          <Button
+                            size="icon-sm"
+                            variant="destructive-ghost"
+                            aria-label="Delete turn"
+                            onClick={() => turns.remove(turn.id)}
+                          >
+                            <Trash2 />
+                          </Button>
+                        </Hint>
+                      </>
                     }
                   />
-                )}
-              </div>
-            )}
+
+                  <RowBody>
+                    <TextAreaField
+                      label="Message"
+                      className="[&>label]:sr-only"
+                      hint={
+                        isPrompt
+                          ? undefined
+                          : "Markdown is rendered: headings, lists, **bold**, `code` and ``` fenced blocks."
+                      }
+                      rows={isPrompt ? 3 : 6}
+                      value={turn.text}
+                      placeholder={
+                        isPrompt
+                          ? "Ask the assistant something…"
+                          : "Write the assistant's reply…"
+                      }
+                      onChange={(text) => turns.update(turn.id, { text })}
+                    />
+
+                    {!isPrompt && (
+                      <Disclosure
+                        label="Reasoning"
+                        badge={
+                          turn.reasoning.trim() ? (
+                            <DisclosureDot title="This reply shows a reasoning block" />
+                          ) : undefined
+                        }
+                      >
+                        <TextAreaField
+                          label="Reasoning"
+                          className="[&>label]:sr-only"
+                          hint="Optional. Renders as the collapsed “thought for a few seconds” block."
+                          rows={2}
+                          value={turn.reasoning}
+                          placeholder="What the model considered before answering…"
+                          onChange={(reasoning) =>
+                            turns.update(turn.id, { reasoning })
+                          }
+                        />
+                      </Disclosure>
+                    )}
+                  </RowBody>
+                </>
+              );
+            }}
           </SortableList>
         )}
       </section>

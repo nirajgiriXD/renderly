@@ -8,7 +8,6 @@ import {
   MessageCircleMore,
   MessageSquare,
   MessageSquareQuote,
-  Palette,
   StickyNote,
   TextSelect,
   User,
@@ -24,17 +23,28 @@ import type { AppConfig, CategoryId } from "@/types";
 export type SectionDescriptor<C extends CategoryId> = {
   id: Extract<keyof AppConfig[C], string>;
   label: string;
+  /** One line on what the section is for, shown under the inspector title. */
+  summary: string;
   icon: LucideIcon;
 };
 
 export type CategoryDescriptor<C extends CategoryId = CategoryId> = {
   id: C;
   label: string;
-  /** Shown under the title in the editor header. */
+  /** Shown under the title in the inspector header. */
   description: string;
   icon: LucideIcon;
   sections: readonly SectionDescriptor<C>[];
 };
+
+/*
+ * `appearance` is deliberately absent from every section list.
+ *
+ * Theme, device and frame describe how the *canvas* renders what you have
+ * written, not the content itself, so they live on the canvas toolbar beside
+ * the thing they change. The config still stores them exactly as before —
+ * only the place you reach them moved.
+ */
 
 const POSTS: CategoryDescriptor<"posts"> = {
   id: "posts",
@@ -42,11 +52,30 @@ const POSTS: CategoryDescriptor<"posts"> = {
   description: "Feed posts with captions, media and engagement counts.",
   icon: StickyNote,
   sections: [
-    { id: "apps", label: "Platforms", icon: Globe },
-    { id: "author", label: "Author", icon: User },
-    { id: "content", label: "Content", icon: TextSelect },
-    { id: "metrics", label: "Metrics", icon: Gauge },
-    { id: "appearance", label: "Appearance", icon: Palette },
+    {
+      id: "apps",
+      label: "Platforms",
+      summary: "Choose which feeds to render this post in.",
+      icon: Globe,
+    },
+    {
+      id: "author",
+      label: "Author",
+      summary: "The account the post is published from.",
+      icon: User,
+    },
+    {
+      id: "content",
+      label: "Content",
+      summary: "Caption, media and the platform-specific extras.",
+      icon: TextSelect,
+    },
+    {
+      id: "metrics",
+      label: "Metrics",
+      summary: "Engagement counts and the publish time.",
+      icon: Gauge,
+    },
   ],
 };
 
@@ -56,10 +85,24 @@ const COMMENTS: CategoryDescriptor<"comments"> = {
   description: "Comment threads with replies, likes and creator badges.",
   icon: MessageSquare,
   sections: [
-    { id: "apps", label: "Platforms", icon: Globe },
-    { id: "users", label: "People", icon: Users },
-    { id: "thread", label: "Thread", icon: MessageSquareQuote },
-    { id: "appearance", label: "Appearance", icon: Palette },
+    {
+      id: "apps",
+      label: "Platforms",
+      summary: "Choose which comment sections to render.",
+      icon: Globe,
+    },
+    {
+      id: "users",
+      label: "People",
+      summary: "The creator and everyone who comments.",
+      icon: Users,
+    },
+    {
+      id: "thread",
+      label: "Thread",
+      summary: "The comments themselves, in order.",
+      icon: MessageSquareQuote,
+    },
   ],
 };
 
@@ -69,10 +112,24 @@ const MESSAGES: CategoryDescriptor<"messages"> = {
   description: "Direct and group chats with attachments and read receipts.",
   icon: MessageCircleMore,
   sections: [
-    { id: "apps", label: "Platforms", icon: Globe },
-    { id: "users", label: "People", icon: Users },
-    { id: "conversation", label: "Conversation", icon: MessageSquare },
-    { id: "appearance", label: "Appearance", icon: Palette },
+    {
+      id: "apps",
+      label: "Platforms",
+      summary: "Choose which messaging apps to render.",
+      icon: Globe,
+    },
+    {
+      id: "users",
+      label: "People",
+      summary: "Both sides of the conversation.",
+      icon: Users,
+    },
+    {
+      id: "conversation",
+      label: "Conversation",
+      summary: "The thread, its header and every message in it.",
+      icon: MessageSquare,
+    },
   ],
 };
 
@@ -82,9 +139,18 @@ const AI_CHATS: CategoryDescriptor<"ai-chats"> = {
   description: "Assistant transcripts with markdown, code and reasoning.",
   icon: BotMessageSquare,
   sections: [
-    { id: "apps", label: "Assistants", icon: Globe },
-    { id: "conversation", label: "Conversation", icon: MessageSquare },
-    { id: "appearance", label: "Appearance", icon: Palette },
+    {
+      id: "apps",
+      label: "Assistants",
+      summary: "Choose which assistants to render, and their models.",
+      icon: Globe,
+    },
+    {
+      id: "conversation",
+      label: "Transcript",
+      summary: "Prompts, replies and optional reasoning.",
+      icon: MessageSquare,
+    },
   ],
 };
 

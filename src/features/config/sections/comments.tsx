@@ -2,24 +2,46 @@
  * External dependencies.
  */
 import { useMemo } from "react";
-import { Heart, Pin, Plus, Reply, Trash2, UserPlus } from "lucide-react";
+import {
+  Heart,
+  MessagesSquare,
+  Pin,
+  Plus,
+  Reply,
+  Trash2,
+  UserPlus,
+  Users,
+} from "lucide-react";
 
 /**
  * Internal dependencies.
  */
 import { DateTimeField } from "@/components/common/DateTimeField";
+import { Disclosure, DisclosureDot } from "@/components/common/Disclosure";
+import { EmptyState } from "@/components/common/EmptyState";
 import {
-  Field,
   FieldGrid,
   NumberField,
   SelectField,
   TextAreaField,
 } from "@/components/common/fields";
+import { GroupHeader, Panel } from "@/components/common/Panel";
 import { PersonFields } from "@/components/common/PersonFields";
-import { SortableList } from "@/components/common/SortableList";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import {
+  RowBody,
+  RowHeader,
+  SortableList,
+} from "@/components/common/SortableList";
 import { Toggle } from "@/components/common/Toggle";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Hint } from "@/components/ui/tooltip";
 import { useListEditor } from "@/hooks";
 import { createId } from "@/lib/id";
 import { useSection } from "@/store";
@@ -52,6 +74,36 @@ const newReply = (authorId: string): CommentReply => ({
   date: new Date().toISOString(),
 });
 
+/** Compact author picker used in the header of a comment or reply row. */
+const AuthorSelect = ({
+  value,
+  options,
+  onChange,
+  className,
+}: {
+  value: string;
+  options: { value: string; label: string }[];
+  onChange: (value: string) => void;
+  className?: string;
+}) => (
+  <Select value={value} onValueChange={onChange}>
+    <SelectTrigger
+      size="sm"
+      aria-label="Author"
+      className={className ?? "min-w-0 max-w-44 flex-1 border-transparent bg-transparent shadow-none"}
+    >
+      <SelectValue placeholder="Author" />
+    </SelectTrigger>
+    <SelectContent>
+      {options.map((option) => (
+        <SelectItem key={option.value} value={option.value}>
+          {option.label}
+        </SelectItem>
+      ))}
+    </SelectContent>
+  </Select>
+);
+
 export const CommentPeopleSection = () => {
   const [users, setUsers] = useSection("comments", "users");
 
@@ -60,62 +112,82 @@ export const CommentPeopleSection = () => {
   );
 
   return (
-    <div className="space-y-6">
-      <section className="space-y-3 rounded-xl border p-4">
-        <h3 className="text-sm font-semibold">Creator</h3>
-        <p className="-mt-2 text-xs text-muted-foreground">
-          The account that owns the post. Their comments get the author badge.
-        </p>
+    <div className="space-y-5">
+      <Panel
+        title="Creator"
+        description="The account that owns the post. Their comments get the author badge."
+      >
         <PersonFields
           person={users.creator}
           onChange={(patch) =>
             setUsers({ creator: { ...users.creator, ...patch } })
           }
         />
-      </section>
+      </Panel>
 
       <section className="space-y-3">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <h3 className="text-sm font-semibold">Commenters</h3>
-            <Badge variant="secondary">{participants.items.length}</Badge>
-          </div>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => participants.add(newPerson())}
-          >
-            <UserPlus />
-            Add person
-          </Button>
-        </div>
+        <GroupHeader
+          title="Commenters"
+          count={participants.items.length}
+          description="Everyone else who can appear in the thread."
+          actions={
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => participants.add(newPerson())}
+            >
+              <UserPlus />
+              Add person
+            </Button>
+          }
+        />
 
         {participants.items.length === 0 ? (
-          <p className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
-            Add the people who reply to this post.
-          </p>
+          <EmptyState
+            size="sm"
+            icon={Users}
+            title="No commenters yet"
+            description="Add the people who reply to this post so you can assign comments to them."
+            action={
+              <Button size="sm" onClick={() => participants.add(newPerson())}>
+                <UserPlus />
+                Add the first person
+              </Button>
+            }
+          />
         ) : (
-          <ul className="space-y-4">
+          <ul className="space-y-2.5">
             {participants.items.map((person) => (
-              <li key={person.id} className="space-y-3 rounded-xl border p-4">
-                <div className="flex items-center justify-between gap-2">
-                  <h4 className="text-sm font-medium">
-                    {person.name.trim() || "Unnamed person"}
+              <li
+                key={person.id}
+                className="group/row overflow-hidden rounded-xl border border-border bg-surface shadow-xs transition-colors hover:border-border-strong"
+              >
+                <div className="flex items-center gap-2 border-b border-border/70 bg-sunken/40 px-3.5 py-1.5">
+                  <h4 className="min-w-0 flex-1 truncate text-[0.8125rem] font-medium">
+                    {person.name.trim() || (
+                      <span className="text-muted-foreground">
+                        Unnamed person
+                      </span>
+                    )}
                   </h4>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    aria-label="Remove person"
-                    onClick={() => participants.remove(person.id)}
-                  >
-                    <Trash2 className="text-destructive" />
-                  </Button>
+                  <Hint label="Remove person">
+                    <Button
+                      size="icon-sm"
+                      variant="destructive-ghost"
+                      aria-label={`Remove ${person.name.trim() || "person"}`}
+                      onClick={() => participants.remove(person.id)}
+                    >
+                      <Trash2 />
+                    </Button>
+                  </Hint>
                 </div>
-                <PersonFields
-                  person={person}
-                  showVerified={false}
-                  onChange={(patch) => participants.update(person.id, patch)}
-                />
+                <div className="p-3.5">
+                  <PersonFields
+                    person={person}
+                    showVerified={false}
+                    onChange={(patch) => participants.update(person.id, patch)}
+                  />
+                </div>
               </li>
             ))}
           </ul>
@@ -145,131 +217,134 @@ export const CommentThreadSection = () => {
   const updateReplies = (commentId: string, replies: CommentReply[]) =>
     comments.update(commentId, { replies });
 
+  const addComment = () => comments.add(newComment(users.creator.id));
+
   return (
-    <div className="space-y-6">
-      <FieldGrid>
-        <NumberField
-          label="Total comment count"
-          hint="Shown in the thread header, independent of how many you list."
-          value={thread.totalCount}
-          onChange={(totalCount) => setThread({ totalCount })}
-        />
-        <SelectField
-          label="Sort order"
-          value={thread.sort}
-          onChange={(sort) => setThread({ sort })}
-          options={[
-            { label: "Top comments", value: "top" },
-            { label: "Newest first", value: "newest" },
-          ]}
-        />
-      </FieldGrid>
+    <div className="space-y-5">
+      <Panel title="Thread header">
+        <FieldGrid>
+          <NumberField
+            label="Total comment count"
+            hint="Shown in the header, independent of how many you list below."
+            value={thread.totalCount}
+            onChange={(totalCount) => setThread({ totalCount })}
+          />
+          <SelectField
+            label="Sort order"
+            hint="The label the platform shows above the thread."
+            value={thread.sort}
+            onChange={(sort) => setThread({ sort })}
+            options={[
+              { label: "Top comments", value: "top" },
+              { label: "Newest first", value: "newest" },
+            ]}
+          />
+        </FieldGrid>
+      </Panel>
 
       <section className="space-y-3">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <h3 className="text-sm font-semibold">Comments</h3>
-            <Badge variant="secondary">{comments.items.length}</Badge>
-          </div>
-          <Button
-            size="sm"
-            onClick={() => comments.add(newComment(users.creator.id))}
-          >
-            <Plus />
-            Add comment
-          </Button>
-        </div>
+        <GroupHeader
+          title="Comments"
+          count={comments.items.length}
+          description="Drag to reorder. Replies nest under their comment."
+          actions={
+            <Button size="sm" onClick={addComment}>
+              <Plus />
+              Add comment
+            </Button>
+          }
+        />
 
         {comments.items.length === 0 ? (
-          <p className="rounded-xl border border-dashed p-6 text-center text-sm text-muted-foreground">
-            No comments yet. Add one to populate the thread.
-          </p>
+          <EmptyState
+            size="sm"
+            icon={MessagesSquare}
+            title="The thread is empty"
+            description="Add a comment to populate the thread on every selected platform."
+            action={
+              <Button size="sm" onClick={addComment}>
+                <Plus />
+                Add the first comment
+              </Button>
+            }
+          />
         ) : (
           <SortableList items={comments.items} onReorder={comments.move}>
             {(comment) => (
-              <div className="space-y-4 p-4 pl-1">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <SelectField
-                    label=""
-                    className="min-w-40 flex-1 [&>label]:sr-only"
-                    value={comment.authorId}
-                    options={people}
-                    onChange={(authorId) =>
-                      comments.update(comment.id, { authorId })
-                    }
-                  />
-                  <div className="flex items-center gap-1">
-                    <Toggle
-                      pressed={comment.pinned}
-                      label="Pinned"
-                      icon={Pin}
-                      onPressedChange={(pinned) =>
-                        comments.update(comment.id, { pinned })
+              <>
+                <RowHeader
+                  lead={
+                    <AuthorSelect
+                      value={comment.authorId}
+                      options={people}
+                      onChange={(authorId) =>
+                        comments.update(comment.id, { authorId })
                       }
                     />
-                    <Toggle
-                      pressed={comment.hearted}
-                      label="Hearted by creator"
-                      icon={Heart}
-                      onPressedChange={(hearted) =>
-                        comments.update(comment.id, { hearted })
-                      }
-                    />
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() =>
-                        updateReplies(comment.id, [
-                          ...comment.replies,
-                          newReply(users.creator.id),
-                        ])
-                      }
-                    >
-                      <Reply />
-                      Reply
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      aria-label="Delete comment"
-                      onClick={() => comments.remove(comment.id)}
-                    >
-                      <Trash2 className="text-destructive" />
-                    </Button>
-                  </div>
-                </div>
-
-                <TextAreaField
-                  label="Comment"
-                  className="[&>label]:sr-only"
-                  rows={3}
-                  value={comment.text}
-                  placeholder="Write a comment…"
-                  onChange={(text) => comments.update(comment.id, { text })}
+                  }
+                  actions={
+                    <>
+                      <Toggle
+                        pressed={comment.pinned}
+                        label="Pinned by the creator"
+                        icon={Pin}
+                        onPressedChange={(pinned) =>
+                          comments.update(comment.id, { pinned })
+                        }
+                      />
+                      <Toggle
+                        pressed={comment.hearted}
+                        label="Hearted by the creator"
+                        icon={Heart}
+                        onPressedChange={(hearted) =>
+                          comments.update(comment.id, { hearted })
+                        }
+                      />
+                      <Hint label="Add a reply">
+                        <Button
+                          size="icon-sm"
+                          variant="ghost"
+                          aria-label="Add a reply"
+                          onClick={() =>
+                            updateReplies(comment.id, [
+                              ...comment.replies,
+                              newReply(users.creator.id),
+                            ])
+                          }
+                        >
+                          <Reply />
+                        </Button>
+                      </Hint>
+                      <Hint label="Delete comment">
+                        <Button
+                          size="icon-sm"
+                          variant="destructive-ghost"
+                          aria-label="Delete comment"
+                          onClick={() => comments.remove(comment.id)}
+                        >
+                          <Trash2 />
+                        </Button>
+                      </Hint>
+                    </>
+                  }
                 />
 
-                <FieldGrid>
-                  <NumberField
-                    label="Likes"
-                    value={comment.likes}
-                    onChange={(likes) => comments.update(comment.id, { likes })}
+                <RowBody>
+                  <TextAreaField
+                    label="Comment"
+                    className="[&>label]:sr-only"
+                    rows={2}
+                    value={comment.text}
+                    placeholder="Write a comment…"
+                    onChange={(text) => comments.update(comment.id, { text })}
                   />
-                  <DateTimeField
-                    label="Posted"
-                    value={comment.date}
-                    onChange={(date) => comments.update(comment.id, { date })}
-                  />
-                </FieldGrid>
 
-                {comment.replies.length > 0 && (
-                  <Field label={`Replies (${comment.replies.length})`}>
-                    <ul className="space-y-3 border-l-2 pl-3">
+                  {comment.replies.length > 0 && (
+                    <ul className="space-y-3 border-l-2 border-border pl-3">
                       {comment.replies.map((reply) => (
-                        <li key={reply.id} className="space-y-3">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <SelectField
-                              label=""
-                              className="min-w-40 flex-1 [&>label]:sr-only"
+                        <li key={reply.id} className="group/row space-y-2">
+                          <div className="flex items-center gap-1.5">
+                            <AuthorSelect
                               value={reply.authorId}
                               options={people}
                               onChange={(authorId) =>
@@ -282,10 +357,11 @@ export const CommentThreadSection = () => {
                                   )
                                 )
                               }
+                              className="-ml-2 min-w-0 max-w-40 flex-1 border-transparent bg-transparent shadow-none"
                             />
                             <NumberField
-                              label=""
-                              className="w-24 [&>label]:sr-only"
+                              label="Likes"
+                              className="ml-auto w-20 [&>label]:sr-only"
                               value={reply.likes}
                               onChange={(likes) =>
                                 updateReplies(
@@ -298,21 +374,23 @@ export const CommentThreadSection = () => {
                                 )
                               }
                             />
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              aria-label="Delete reply"
-                              onClick={() =>
-                                updateReplies(
-                                  comment.id,
-                                  comment.replies.filter(
-                                    (entry) => entry.id !== reply.id
+                            <Hint label="Delete reply">
+                              <Button
+                                size="icon-sm"
+                                variant="destructive-ghost"
+                                aria-label="Delete reply"
+                                onClick={() =>
+                                  updateReplies(
+                                    comment.id,
+                                    comment.replies.filter(
+                                      (entry) => entry.id !== reply.id
+                                    )
                                   )
-                                )
-                              }
-                            >
-                              <Trash2 className="text-destructive" />
-                            </Button>
+                                }
+                              >
+                                <Trash2 />
+                              </Button>
+                            </Hint>
                           </div>
                           <TextAreaField
                             label="Reply"
@@ -334,9 +412,35 @@ export const CommentThreadSection = () => {
                         </li>
                       ))}
                     </ul>
-                  </Field>
-                )}
-              </div>
+                  )}
+
+                  <Disclosure
+                    label="Likes and timing"
+                    badge={
+                      comment.likes > 0 ? (
+                        <DisclosureDot title="This comment has likes" />
+                      ) : undefined
+                    }
+                  >
+                    <FieldGrid>
+                      <NumberField
+                        label="Likes"
+                        value={comment.likes}
+                        onChange={(likes) =>
+                          comments.update(comment.id, { likes })
+                        }
+                      />
+                      <DateTimeField
+                        label="Posted"
+                        value={comment.date}
+                        onChange={(date) =>
+                          comments.update(comment.id, { date })
+                        }
+                      />
+                    </FieldGrid>
+                  </Disclosure>
+                </RowBody>
+              </>
             )}
           </SortableList>
         )}

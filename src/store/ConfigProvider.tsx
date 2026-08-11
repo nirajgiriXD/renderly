@@ -114,6 +114,14 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
     [patchApps]
   );
 
+  const setPlatforms = useCallback(
+    (category: CategoryId, platforms: readonly string[]) =>
+      patchApps(category, (apps) => ({
+        selected: apps.multiSelect ? [...platforms] : platforms.slice(0, 1),
+      })),
+    [patchApps]
+  );
+
   const setMultiSelect = useCallback(
     (category: CategoryId, enabled: boolean) =>
       patchApps(category, (apps) => ({
@@ -191,6 +199,7 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
     () => ({
       updateSection,
       togglePlatform,
+      setPlatforms,
       setMultiSelect,
       setAppearance,
       resetCategory,
@@ -201,6 +210,7 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
     [
       updateSection,
       togglePlatform,
+      setPlatforms,
       setMultiSelect,
       setAppearance,
       resetCategory,

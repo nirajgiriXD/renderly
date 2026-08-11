@@ -2,7 +2,7 @@
  * External dependencies.
  */
 import { useCallback, useId, useRef, useState } from "react";
-import { Film, ImagePlus, Trash2, Upload } from "lucide-react";
+import { Film, ImagePlus, Loader2, Trash2, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
 
 /**
@@ -10,6 +10,7 @@ import { toast } from "sonner";
  */
 import { Field } from "./fields";
 import { Button } from "@/components/ui/button";
+import { Hint } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { MAX_MEDIA_BYTES, filesToMediaItems, formatBytes } from "@/lib/media";
 import type { MediaItem } from "@/types";
@@ -47,6 +48,7 @@ export const MediaField = ({
   const [loading, setLoading] = useState(false);
 
   const remaining = Math.max(max - value.length, 0);
+  const isEmpty = value.length === 0;
 
   const ingest = useCallback(
     async (files: FileList | File[]) => {
@@ -100,92 +102,134 @@ export const MediaField = ({
           void ingest(event.dataTransfer.files);
         }}
         className={cn(
-          "rounded-xl border border-dashed p-3 transition-colors",
-          dragging ? "border-primary bg-primary/5" : "border-input"
+          "rounded-xl border border-dashed transition-[background-color,border-color] duration-150",
+          dragging
+            ? "border-primary bg-brand-soft/60"
+            : "border-border-strong/70 bg-sunken/40"
         )}
       >
-        {value.length > 0 && (
-          <ul
-            className={cn(
-              "mb-3 grid gap-2",
-              max === 1 ? "grid-cols-1" : "grid-cols-3 @md:grid-cols-4"
-            )}
-          >
-            {value.map((item) => (
-              <li
-                key={item.id}
-                className="group relative overflow-hidden rounded-lg border bg-muted"
-              >
-                {item.kind === "image" ? (
-                  <img
-                    src={item.src}
-                    alt={item.name}
-                    className={cn(
-                      "w-full object-cover",
-                      max === 1 ? "max-h-44" : "aspect-square"
-                    )}
-                  />
-                ) : (
-                  <div
-                    className={cn(
-                      "flex w-full flex-col items-center justify-center gap-1 text-muted-foreground",
-                      max === 1 ? "h-32" : "aspect-square"
-                    )}
-                  >
-                    <Film className="size-5" aria-hidden />
-                    <span className="max-w-full truncate px-2 text-[11px]">
-                      {item.name}
-                    </span>
-                  </div>
-                )}
-
-                <button
-                  type="button"
-                  aria-label={`Remove ${item.name}`}
-                  onClick={() =>
-                    onChange(value.filter((entry) => entry.id !== item.id))
-                  }
-                  className="absolute right-1 top-1 grid size-6 cursor-pointer place-items-center rounded-md bg-background/90 text-destructive opacity-0 shadow-sm transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
-                >
-                  <Trash2 className="size-3.5" />
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <div className="flex flex-wrap items-center gap-2">
-          <Button
+        {isEmpty ? (
+          /* Nothing uploaded: the whole box is the affordance. */
+          <button
             type="button"
-            size="sm"
-            variant="outline"
-            disabled={loading || remaining === 0}
+            disabled={loading}
             onClick={() => inputRef.current?.click()}
-          >
-            {loading ? (
-              <Upload className="animate-pulse" />
-            ) : (
-              <ImagePlus />
+            className={cn(
+              "flex w-full cursor-pointer flex-col items-center gap-2 rounded-xl px-4 py-6 text-center",
+              "transition-colors duration-150 hover:bg-accent/50",
+              "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
+              "disabled:pointer-events-none disabled:opacity-60"
             )}
-            {value.length === 0 ? "Choose file" : "Add more"}
-          </Button>
-
-          {value.length > 0 && (
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              onClick={() => onChange([])}
+          >
+            <span className="grid size-9 place-items-center rounded-lg bg-brand-soft text-brand-text">
+              {loading ? (
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+              ) : (
+                <UploadCloud className="size-4" aria-hidden />
+              )}
+            </span>
+            <span className="text-[0.8125rem] font-medium">
+              {loading ? "Reading files…" : "Drop files here, or click to browse"}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              Images and video · up to {formatBytes(MAX_MEDIA_BYTES)} each
+              {max > 1 && ` · ${max} max`}
+            </span>
+          </button>
+        ) : (
+          <div className="space-y-3 p-3">
+            <ul
+              className={cn(
+                "grid gap-2",
+                max === 1 ? "grid-cols-1" : "grid-cols-3 @md:grid-cols-4"
+              )}
             >
-              Clear
-            </Button>
-          )}
+              {value.map((item) => (
+                <li
+                  key={item.id}
+                  className="group/media relative overflow-hidden rounded-lg border border-border bg-surface shadow-xs"
+                >
+                  {item.kind === "image" ? (
+                    <img
+                      src={item.src}
+                      alt={item.name}
+                      className={cn(
+                        "w-full object-cover",
+                        max === 1 ? "max-h-44" : "aspect-square"
+                      )}
+                    />
+                  ) : (
+                    <div
+                      className={cn(
+                        "flex w-full flex-col items-center justify-center gap-1.5 bg-muted text-muted-foreground",
+                        max === 1 ? "h-32" : "aspect-square"
+                      )}
+                    >
+                      <Film className="size-5" aria-hidden />
+                      <span className="max-w-full truncate px-2 text-[11px]">
+                        {item.name}
+                      </span>
+                    </div>
+                  )}
 
-          <p className="text-xs text-muted-foreground">
-            Drop files here · up to {formatBytes(MAX_MEDIA_BYTES)} each
-            {max > 1 && ` · ${value.length}/${max}`}
-          </p>
-        </div>
+                  <Hint label={`Remove ${item.name}`}>
+                    <button
+                      type="button"
+                      aria-label={`Remove ${item.name}`}
+                      onClick={() =>
+                        onChange(value.filter((entry) => entry.id !== item.id))
+                      }
+                      className={cn(
+                        "absolute right-1.5 top-1.5 grid size-6 cursor-pointer place-items-center rounded-md",
+                        "bg-surface/95 text-destructive shadow-sm backdrop-blur-sm",
+                        "opacity-0 transition-opacity duration-150",
+                        "group-hover/media:opacity-100 focus-visible:opacity-100",
+                        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+                      )}
+                    >
+                      <Trash2 className="size-3.5" />
+                    </button>
+                  </Hint>
+                </li>
+              ))}
+            </ul>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={loading || remaining === 0}
+                onClick={() => inputRef.current?.click()}
+              >
+                {loading ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  <ImagePlus />
+                )}
+                {max === 1 ? "Replace" : "Add more"}
+              </Button>
+
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() => onChange([])}
+              >
+                Clear
+              </Button>
+
+              {max > 1 && (
+                <p
+                  data-numeric
+                  className="ml-auto text-xs text-muted-foreground"
+                >
+                  {value.length} of {max}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
 
         <input
           id={id}

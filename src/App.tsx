@@ -1,14 +1,16 @@
 /**
  * External dependencies.
  */
-import { useRef, useState } from "react";
-import { Eye, SlidersHorizontal } from "lucide-react";
+import { useCallback, useRef, useState } from "react";
 
 /**
  * Internal dependencies.
  */
-import { AppHeader } from "@/components/layout/AppHeader";
-import { PreviewPanel } from "@/components/layout/PreviewPanel";
+import { CanvasPanel } from "@/components/layout/CanvasPanel";
+import { CategoryRail, CategoryTabBar } from "@/components/layout/CategoryRail";
+import { CommandPalette } from "@/components/layout/CommandPalette";
+import { TopBar, WorkspaceModeBar } from "@/components/layout/TopBar";
+import type { WorkspaceMode } from "@/components/layout/TopBar";
 import { ConfigPanel } from "@/features/config/ConfigPanel";
 import {
   ResizableHandle,
@@ -16,90 +18,103 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { Toaster } from "@/components/ui/sonner";
-import { cn } from "@/lib/utils";
-import { useIsDesktop } from "@/hooks";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { useHotkey, useIsDesktop, useStageExport } from "@/hooks";
+
+/** Waits for the browser to paint, so a just-mounted node can be measured. */
+const nextPaint = () =>
+  new Promise<void>((resolve) => {
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+  });
 
 /**
  * Workspace shell.
  *
- * Wide viewports get a resizable editor/preview split. Narrow ones would make
- * that split unusable, so they switch between the two halves instead of
- * stacking them into one long scroll.
+ * Three regions on desktop — the content-type rail, the inspector and the
+ * canvas — with the last two sharing a resizable split. Narrow viewports have
+ * no room for the split, so they move the rail to a bottom tab bar and swap
+ * the inspector and the canvas in place.
  */
 export const App = () => {
   const stageRef = useRef<HTMLDivElement>(null);
   const isDesktop = useIsDesktop();
-  const [mobileView, setMobileView] = useState<"edit" | "preview">("edit");
+  const [mode, setMode] = useState<WorkspaceMode>("edit");
+  const [commandsOpen, setCommandsOpen] = useState(false);
+
+  useHotkey("k", () => setCommandsOpen((open) => !open), {
+    meta: true,
+    allowInInput: true,
+  });
+
+  /*
+   * Exporting rasterises the live stage, which on a narrow viewport may not be
+   * mounted — the inspector is showing instead. Rather than failing with
+   * "there is nothing to export", bring the canvas forward and let the export
+   * proceed from what the user asked for.
+   */
+  const revealCanvas = useCallback(async () => {
+    if (isDesktop || mode === "preview") return;
+    setMode("preview");
+    await nextPaint();
+  }, [isDesktop, mode]);
+
+  const exportActions = useStageExport(stageRef, revealCanvas);
 
   return (
-    <div className="flex h-dvh flex-col overflow-hidden bg-background text-foreground">
-      <AppHeader exportTargetRef={stageRef} />
+    <TooltipProvider>
+      <div className="flex h-dvh flex-col overflow-hidden bg-background text-foreground">
+        <TopBar
+          exportActions={exportActions}
+          onOpenCommands={() => setCommandsOpen(true)}
+        />
 
-      <main className="min-h-0 flex-1">
-        {isDesktop ? (
-          <ResizablePanelGroup orientation="horizontal" className="h-full">
-            <ResizablePanel
-              id="editor"
-              defaultSize="46%"
-              minSize="28%"
-              className="h-full"
-            >
-              <ConfigPanel className="h-full" />
-            </ResizablePanel>
+        <WorkspaceModeBar mode={mode} onModeChange={setMode} />
 
-            <ResizableHandle withHandle />
+        <div className="flex min-h-0 flex-1">
+          <CategoryRail />
 
-            <ResizablePanel
-              id="preview"
-              defaultSize="54%"
-              minSize="30%"
-              className="h-full"
-            >
-              <PreviewPanel stageRef={stageRef} className="h-full" />
-            </ResizablePanel>
-          </ResizablePanelGroup>
-        ) : (
-          <div className="flex h-full flex-col">
-            <div className="min-h-0 flex-1">
-              {mobileView === "edit" ? (
-                <ConfigPanel className="h-full" />
-              ) : (
-                <PreviewPanel stageRef={stageRef} className="h-full" />
-              )}
-            </div>
-
-            <nav
-              aria-label="Workspace view"
-              className="grid shrink-0 grid-cols-2 gap-1 border-t bg-background p-2"
-            >
-              {(
-                [
-                  { id: "edit", label: "Edit", icon: SlidersHorizontal },
-                  { id: "preview", label: "Preview", icon: Eye },
-                ] as const
-              ).map((entry) => (
-                <button
-                  key={entry.id}
-                  type="button"
-                  aria-current={mobileView === entry.id ? "page" : undefined}
-                  onClick={() => setMobileView(entry.id)}
-                  className={cn(
-                    "flex cursor-pointer items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                    mobileView === entry.id
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-muted"
-                  )}
+          <main className="min-h-0 min-w-0 flex-1">
+            {isDesktop ? (
+              <ResizablePanelGroup orientation="horizontal" className="h-full">
+                <ResizablePanel
+                  id="inspector"
+                  defaultSize="42%"
+                  minSize="26%"
+                  maxSize="60%"
+                  className="h-full"
                 >
-                  <entry.icon className="size-4" aria-hidden />
-                  {entry.label}
-                </button>
-              ))}
-            </nav>
-          </div>
-        )}
-      </main>
+                  <ConfigPanel className="h-full" />
+                </ResizablePanel>
+
+                <ResizableHandle />
+
+                <ResizablePanel
+                  id="canvas"
+                  defaultSize="58%"
+                  minSize="30%"
+                  className="h-full"
+                >
+                  <CanvasPanel stageRef={stageRef} className="h-full" />
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            ) : mode === "edit" ? (
+              <ConfigPanel className="h-full" />
+            ) : (
+              <CanvasPanel stageRef={stageRef} className="h-full" />
+            )}
+          </main>
+        </div>
+
+        <CategoryTabBar />
+      </div>
+
+      <CommandPalette
+        open={commandsOpen}
+        onOpenChange={setCommandsOpen}
+        exportActions={exportActions}
+      />
 
       <Toaster />
-    </div>
+    </TooltipProvider>
   );
 };

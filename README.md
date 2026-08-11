@@ -1,10 +1,11 @@
 # Post Preview
 
 See exactly how your content will look on the platform it is going to — before
-you publish it. Fill in a form on the left, watch faithful previews render on
-the right, and export what you see as a PNG.
+you publish it. Pick a content type in the rail, fill in the inspector, watch
+faithful previews render on the canvas, and export what you see as a PNG.
 
-Everything runs in the browser. No account, no upload, no network calls.
+Everything runs in the browser. No account, no upload, no network calls —
+fonts included.
 
 ## What it previews
 
@@ -18,8 +19,9 @@ Everything runs in the browser. No account, no upload, no network calls.
 Each preview follows the real client: its palette in both light and dark mode,
 its typography and spacing, its verification marks, how it tiles two or four
 attachments, where the timestamp sits, which counts it rounds and which it
-spells out. Previews can be framed in an iPhone, an Android handset or a
-browser window.
+spells out. The canvas toolbar frames a preview in an iPhone, an Android
+handset or a browser window, flips its theme, and zooms out to compare several
+platforms side by side.
 
 ## Using it
 
@@ -51,8 +53,8 @@ src/
 ├── store/            Contexts, providers and hooks for config, settings, workspace
 ├── components/
 │   ├── ui/           shadcn/ui primitives
-│   ├── common/       Form fields, sortable list, error boundary
-│   └── layout/       Header, preview panel, export menu, settings
+│   ├── common/       Form fields, sortable list, panels, empty states, error boundary
+│   └── layout/       Top bar, category rail, canvas + toolbar, command palette, export, settings
 └── features/
     ├── config/       The editor: one section component per content area
     └── preview/

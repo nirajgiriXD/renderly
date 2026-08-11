@@ -1,5 +1,4 @@
 import type { ComponentProps } from "react";
-import { GripVerticalIcon } from "lucide-react";
 import { Group, Panel, Separator } from "react-resizable-panels";
 
 import { cn } from "@/lib/utils";
@@ -38,28 +37,32 @@ function ResizablePanel({ className, ...props }: ComponentProps<typeof Panel>) {
   );
 }
 
+/**
+ * The seam between the inspector and the canvas.
+ *
+ * Reads as a hairline at rest and thickens into a brand-coloured rail while
+ * it is grabbed, so the drag target is obvious the moment you approach it
+ * without adding a permanent divider to the layout.
+ */
 function ResizableHandle({
-  withHandle,
   className,
   ...props
-}: ComponentProps<typeof Separator> & { withHandle?: boolean }) {
+}: ComponentProps<typeof Separator>) {
   return (
     <Separator
       data-slot="resizable-handle"
       className={cn(
-        "group relative flex w-1.5 shrink-0 items-center justify-center bg-transparent outline-none transition-colors",
-        "after:absolute after:inset-y-0 after:left-1/2 after:w-px after:-translate-x-1/2 after:bg-border after:transition-colors",
-        "hover:after:bg-primary/40 focus-visible:after:bg-primary data-[state=drag]:after:bg-primary",
+        "group relative w-2 shrink-0 cursor-col-resize bg-transparent outline-none",
+        // The visible hairline.
+        "after:absolute after:inset-y-0 after:left-1/2 after:w-px after:-translate-x-1/2 after:bg-border",
+        "after:transition-[background-color,width] after:duration-150 after:ease-out-quad",
+        "hover:after:w-0.75 hover:after:bg-primary/50",
+        "focus-visible:after:w-0.75 focus-visible:after:bg-ring",
+        "data-[state=drag]:after:w-0.75 data-[state=drag]:after:bg-primary",
         className
       )}
       {...props}
-    >
-      {withHandle && (
-        <div className="z-10 flex h-5 w-3 items-center justify-center rounded-sm border bg-background text-muted-foreground opacity-0 shadow-xs transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
-          <GripVerticalIcon className="size-2.5" />
-        </div>
-      )}
-    </Separator>
+    />
   );
 }
 
